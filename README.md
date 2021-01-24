@@ -1,12 +1,14 @@
+<p align="center">
+  <img src="imgs/Logo.png" />
+</p>
+
+
 ![Charta logo](imgs/Logo.png "Logo")
 
-** Charting your course to graduation**
+**Charting your course to graduation**
 
 
 Most students don’t graduate from college on time; one-third never will. This is an existential crisis to higher education. We are solving this problem by building a software platform to help students chart their course to graduation and allowing school administrators to identify those at-risk for dropping out. 
-
-
-The best ways to reach us 
 
 
 
