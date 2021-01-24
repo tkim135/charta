@@ -18,6 +18,13 @@ Ruben Krueger             |  Ton Ocean
 |  ![](imgs/ruben.png) |  ![](imgs/tony.png) | ![](imgs/abi.png)  | ![](imgs/kendra.png)  |
 
 
+
+<p align="center">
+  <img src="imgs/ruben.png" width="100" />
+  <img src="imgs/kendra.png" width="100" /> 
+</p>
+
+
 | Member  | Skills  | Personal traits  | Desired growth  | Weaknesses  |
 |---|---|---|---|---|
 | Ruben Krueger  |  Python, leadership |  Intellectually-curious; hates Silicon Valley, programming, and the CS major |  Full-stack development |  Machine learning, web development |
