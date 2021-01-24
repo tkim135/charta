@@ -8,7 +8,14 @@
 Most students don’t graduate from college on time; one-third never will. This is an existential crisis to higher education. We are solving this problem by building a software platform to help students chart their course to graduation and allowing school administrators to identify those at-risk for dropping out. 
 
 
+Ruben Krueger             |  Ton Ocean
+:-------------------------:|:-------------------------:
+![](https://...Dark.png)  |  ![](https://...Ocean.png)
 
+
+|  Ruben Krueger |  Tony Kim |  Abi Olawale | Kendra Dunsmoor  |
+|---|---|---|---|
+|  ![](imgs/ruben.png) |  ![](imgs/tony.png) | ![](imgs/abi.png)  | ![](imgs/kendra.png)  |
 
 
 | Member  | Skills  | Personal traits  | Desired growth  | Weaknesses  |
