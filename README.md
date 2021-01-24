@@ -2,9 +2,6 @@
   <img src="imgs/Logo.png" />
 </p>
 
-
-![Charta logo](imgs/Logo.png "Logo")
-
 **Charting your course to graduation**
 
 
