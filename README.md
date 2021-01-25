@@ -3,14 +3,7 @@
 </p>
 
 
-<p align="center">
-  <img src="imgs/ruben.png" width="150" />
-  <img src="imgs/tony.png" width="150" /> 
-  <img src="imgs/abi.png" width="150" /> 
-  <img src="imgs/kendra.png" width="150" /> 
-</p>
-
-### Synposis
+### Synopsis
 
 Most students don’t graduate from college on time; one-third never will. This is an existential crisis to higher education. We are solving this problem by building a software platform to help students chart their course to graduation and allowing school administrators to identify those at-risk for dropping out. 
 
