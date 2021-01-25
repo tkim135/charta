@@ -23,8 +23,8 @@ Most students don’t graduate from college on time; one-third never will. This 
 
 We communicate through Slack, and you can reach us through email, or carrier pigeon.
 
-**Our @stanford emails**
-* ruben1
-* tkim6
-* aolawale
-* kendraj
+**Emails:**
+* ruben1@stanford.edu
+* tkim6@stanford.edu
+* aolawale@stanford.edu
+* kendraj@stanford.edu
