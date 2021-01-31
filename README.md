@@ -21,7 +21,7 @@ Most students don’t graduate from college on time; one-third never will. This 
 
 ### Contact
 
-We communicate through Slack, and you can reach us through email, or carrier pigeon.
+We communicate through Slack, and you can reach us through email or carrier pigeon.
 
 **Emails:**
 * ruben1@stanford.edu
