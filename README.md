@@ -28,3 +28,8 @@ We communicate through Slack, and you can reach us through email or carrier pige
 * tkim6@stanford.edu
 * aolawale@stanford.edu
 * kendraj@stanford.edu
+
+### Workflow
+
+We use Jira to manage our work (and procastination). Email Ruben (ruben1) to be added. 
+
