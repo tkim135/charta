@@ -34,11 +34,16 @@ for school in connect.get_schools(year):
         # then courses within departments
         courses = connect.get_courses_by_department(dept.code, year=year)
         for course in courses:
+            # specific quarters of the class are determined by course's sections
+            terms = list(set(section.term for section in course.sections))
             course_dict[school.name][dept.code][course.title] = {
                 "GER": course.gers,
                 "Subject": course.subject,
                 "Code": course.code,
-                "Description": course.description
+                "Description": course.description,
+                "Min Units": course.units_min,
+                "Max Units": course.units_max,
+                "Terms": terms
             }
 
 f = open(out_file, "w")
