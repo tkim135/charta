@@ -1,25 +1,39 @@
 import {Component} from 'react';
-
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { InputBase } from '@material-ui/core';
 
 class Header extends Component{
 
     render(){
        return (
-        <header className="lg:px-16 px-6 bg-blue-500 flex flex-wrap items-center lg:py-0 py-2">
-        <div className="flex-1 flex justify-between items-center">
-        <h1 className="text-white text-lg">Charta</h1>
-        </div>
-        <input className="hidden" type="checkbox" id="menu-toggle" />
-          <div className="hidden lg:flex lg:items-center lg:w-auto w-full" id="menu">
-            <nav>
-            <ul className="lg:flex items-center justify-between text-base text-gray-700 pt-4 lg:pt-0">
-              <li><a className="lg:p-4 py-3 px-0 block border-b-2 text-white border-transparent hover:border-indigo-400" href="#">ruben1</a></li>
-            </ul>
-            </nav>
-          </div>
+        <header>
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton edge="start"  color="inherit" aria-label="menu">  </IconButton>
+              <Typography variant="h6"> News </Typography>
+                <Button color="inherit">Login</Button>
+                <div className="">
+              <div className="">
+                <SearchIcon />
+              </div>
+                  <InputBase
+                    placeholder="Search…"
+                    
+                    inputProps={{ 'aria-label': 'search' }}
+                  />
+                </div>
+              </Toolbar>
+              
+            </AppBar>
         </header>
        );
     }
 }
 
 export default Header
+
