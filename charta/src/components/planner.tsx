@@ -1,55 +1,98 @@
-import {Component} from 'react';
+import React, {Component} from 'react';
 import Quarter from './quarter';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import firebase from "firebase";
+import 'firebase/firestore'
+import '../firebase';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
 
-class Planner extends Component {
+interface PlannerState {
+    loading: boolean;
+    quarters: Array<string>;
+}
 
+interface PlannerProps {
+}
+
+class Planner extends Component<PlannerProps, PlannerState> {
+
+    async componentDidMount() {
+        const db = firebase.firestore();
+
+        const userRef = db.collection('users').doc('ruben1');
+        const doc = await userRef.get();
+
+
+        if (!doc.exists) {
+            console.log('No such document!');
+        } else {
+            console.log('Document data:', doc.data());
+            let quarters = doc.data()?.quarters;
+            this.setState({quarters: quarters});
+        }
+
+        this.setState({loading: false});
+
+    }
+
+    constructor(props: PlannerProps) {
+        super(props);
+        this.state = {loading: true, quarters: []};
+
+    }
 
 
     render() {
-        const terms = ['Fall 2017',
-                         'Winter 2017',
-                         'Spring 2018',
-                          'Fall 2018',
-                          'Winter 2019',
-                          'Spring 2019',
-                          'Fall 2019',
-                            'Winter 2020',
-                           'Spring 2020',
-                            'Fall 2020',
-                            'Winter 2021',
-                            'Spring 2021']
-
         return(
             <div>
+                <Backdrop  open={this.state.loading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+
                 <h1>Courses</h1>
+
+
+
+                {/*{this.state.quarters.length > 0 ? this.state.quarters.forEach((quarter: string, i: number) =>  (*/}
+                {/*    <div>*/}
+                {/*        <Quarter name={quarter}/>*/}
+                {/*        <p>{i}</p>*/}
+                {/*    </div>*/}
+                {/*)) : 'loading'}*/}
+
+                {/*{this.state.quarters.length > 0 ? <Quarter name={this.state.quarters[0]}/>: 'loading'}*/}
+
+
+
+
                 <Grid container spacing={3}>
-
                     <Grid item xs={4}>
-                        <Quarter quarter={'Fall 2017'}/>
-                        <Quarter quarter={'Fall 2018'}/>
-                        <Quarter quarter={'Fall 2019'}/>
-                        <Quarter quarter={'Fall 2020'}/>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Quarter quarter={'Winter 2018'}/>
-                        <Quarter quarter={'Winter 2019'}/>
-                        <Quarter quarter={'Winter 2020'}/>
-                        <Quarter quarter={'Winter 2021'}/>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Quarter quarter={'Spring 2018'}/>
-                        <Quarter quarter={'Spring 2019'}/>
-                        <Quarter quarter={'Spring 2020'}/>
-                        <Quarter quarter={'Spring 2021'}/>
+                        {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
+                            if(i % 3 === 0){return <Quarter name={this.state.quarters[i]}/>}
+                            else {return <span/>}
+                        }) : 'loading'}
 
                     </Grid>
+                    <Grid item xs={4}>
+                        {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
+                            if(i % 3 === 1){return <Quarter name={this.state.quarters[i]}/>}
+                            else {return <span/>}
+                        }) : 'loading'}
+                    </Grid>
+                    <Grid item xs={4}>
+                        {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
+                            if(i % 3 === 2){return <Quarter name={this.state.quarters[i]}/>}
+                            else {return <span/>}
+                        }) : 'loading'}                    </Grid>
 
                 </Grid>
-                    {/*{terms.map((term) => <Quarter quarter={term}/>)}*/}
 
             </div>
+
+
         );
     }
 
