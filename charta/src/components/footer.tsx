@@ -3,7 +3,7 @@ import {Component} from 'react';
 class Footer extends Component {
     render(){
         return (
-            <footer className="footer bg-blue-500 relative">
+            <footer className="footer relative">
                 <div className="container mx-auto px-6">
                     <div className="flex flex-col items-center">
                     <div className="sm:w-2/3 text-center py-6">

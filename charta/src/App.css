@@ -10,7 +10,7 @@
 
 
 .App-header {
-  background-color: #282c34;
+  background-color: #6FCF97;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -20,3 +20,18 @@
   color: white;
 }
 
+.footer {
+  background-color: #6FCF97;
+}
+
+header {
+  background-color: #6FCF97 !important;
+}
+
+button {
+  background-color: #6FCF97 !important;
+}
+
+TextField {
+  border-color: white;
+}

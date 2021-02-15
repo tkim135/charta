@@ -41,8 +41,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     async componentDidMount() {
         const db = firebase.firestore();
 
-        const cityRef = db.collection('users').doc('ruben1');
-        const doc = await cityRef.get();
+        const userRef = db.collection('users').doc('ruben1');
+        const doc = await userRef.get();
         if (!doc.exists) {
             console.log('No such document!');
         } else {
@@ -81,8 +81,19 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         this.setState({open: false});
     }
 
-    addCourse() {
+    async addCourse() {
         this.state.courses.push(this.createData(this.state.newCourse, this.state.newTitle, this.state.newUnits, this.state.newGrade, this.state.newReason));
+
+        const db = firebase.firestore();
+
+        // const userRef = db.collection('users').doc('ruben1');
+        // const doc = await userRef.get();
+        //
+        //  .doc('LA').set({
+        //     name: 'Los Angeles', state: 'CA', country: 'USA',
+        //     capital: false, population: 3900000
+        // });
+
         this.handleClose();
     }
 

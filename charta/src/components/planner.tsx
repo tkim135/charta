@@ -55,36 +55,23 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 <h1>Courses</h1>
 
 
-
-                {/*{this.state.quarters.length > 0 ? this.state.quarters.forEach((quarter: string, i: number) =>  (*/}
-                {/*    <div>*/}
-                {/*        <Quarter name={quarter}/>*/}
-                {/*        <p>{i}</p>*/}
-                {/*    </div>*/}
-                {/*)) : 'loading'}*/}
-
-                {/*{this.state.quarters.length > 0 ? <Quarter name={this.state.quarters[0]}/>: 'loading'}*/}
-
-
-
-
                 <Grid container spacing={3}>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 0){return <Quarter name={this.state.quarters[i]}/>}
+                            if(i % 3 === 0){return <Quarter name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
                         }) : 'loading'}
 
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 1){return <Quarter name={this.state.quarters[i]}/>}
+                            if(i % 3 === 1){return <Quarter name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
                         }) : 'loading'}
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 2){return <Quarter name={this.state.quarters[i]}/>}
+                            if(i % 3 === 2){return <Quarter name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
                         }) : 'loading'}                    </Grid>
 

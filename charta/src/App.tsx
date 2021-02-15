@@ -1,31 +1,31 @@
 import {Component} from 'react';
 // import logo from './logo.svg';
 import './App.css';
-// import { BrowserRouter, Route, } from 'react-router-dom';
-// import Login from './login';
-import Header from './components/header';
-import Footer from './components/footer';
-// @ts-ignore
-import ClassCard from './components/card';
-// @ts-ignore
-import Planner from './components/planner';
 
+
+import SignIn from './auth/signin';
+import SignUp from './auth/signup';
+import NotFound from './components/notfound'
+
+import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import Home from './components/home';
 
 
 class App extends Component {
 
-
     render() {
-    return (
-      <div className="flex flex-col h-screen justify-between">
-          <Header/>
-          <ClassCard name="Math 51" term="Spring 2021"/>
-          <ClassCard name="CS 110" term="Winter 2021"/>
+        return (
+            <Router>
+                <Switch>
+                    <Route path="/home" component={Home}/>
+                    <Route exact path="/signin" component={SignIn} />
+                    <Route exact path="/signup" component={SignUp} />
+                    <Route component={NotFound} />
+                </Switch>
 
-          <Planner/>
-          <Footer/>
-        </div>
-      );
+            </Router>
+
+          );
     }
 }
 
