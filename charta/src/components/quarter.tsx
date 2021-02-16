@@ -15,9 +15,12 @@ import Dialog from '@material-ui/core/Dialog';
 import React from 'react';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
+import firebase from "firebase";
+import 'firebase/firestore'
+import '../firebase';
+
 
 interface QuarterState {
     open: boolean;
@@ -30,16 +33,26 @@ interface QuarterState {
     newReason: string;
 }
 interface QuarterProps {
-    quarter: string
+    name: string
 }
 
 class Quarter extends Component<QuarterProps, QuarterState> {
 
-    componentDidMount() {
+    async componentDidMount() {
+        const db = firebase.firestore();
+
+        const userRef = db.collection('users').doc('ruben1');
+        const doc = await userRef.get();
+        if (!doc.exists) {
+            console.log('No such document!');
+        } else {
+            console.log('Document data:', doc.data());
+        }
 
     }
 
-    constructor(props: QuarterProps, state: QuarterState) {
+
+    constructor(props: QuarterProps) {
         super(props);
 
         const courses = [
@@ -68,8 +81,19 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         this.setState({open: false});
     }
 
-    addCourse() {
+    async addCourse() {
         this.state.courses.push(this.createData(this.state.newCourse, this.state.newTitle, this.state.newUnits, this.state.newGrade, this.state.newReason));
+
+        const db = firebase.firestore();
+
+        // const userRef = db.collection('users').doc('ruben1');
+        // const doc = await userRef.get();
+        //
+        //  .doc('LA').set({
+        //     name: 'Los Angeles', state: 'CA', country: 'USA',
+        //     capital: false, population: 3900000
+        // });
+
         this.handleClose();
     }
 
@@ -81,7 +105,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
         return (
             <Accordion>
-                <AccordionSummary>{this.props.quarter}</AccordionSummary>
+                <AccordionSummary>{this.props.name}</AccordionSummary>
                 <AccordionDetails>
                     <TableContainer component={Paper}>
                         <Table aria-label="simple table">
