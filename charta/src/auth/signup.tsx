@@ -14,6 +14,7 @@ import "firebase/auth";
 import { withRouter } from 'react-router'
 import {RouteComponentProps} from "react-router";
 import { Redirect } from 'react-router'
+import logo from '.Logo.png';
 
 
 interface SignUpProps extends RouteComponentProps<any> {
@@ -25,11 +26,10 @@ interface SignUpState{
     email: string,
     password: string,
     confirmPassword: string,
-    redirect: boolean
+    redirect: boolean,
+    errorMsg: string
 }
 
-// React.Component<Props & RouteProps, State>
-// RouteComponentProps, SigninProps, SigninState
 
 class SignUp extends Component<SignUpProps, SignUpState> {
 
@@ -38,26 +38,23 @@ class SignUp extends Component<SignUpProps, SignUpState> {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
 
-        this.state = {email: '',  password: '', confirmPassword: '', redirect: false}
+        this.state = {email: '',  password: '', confirmPassword: '', redirect: false, errorMsg: ''}
 
     }
 
 
     handleSubmit(e:  React.FormEvent) {
         e.preventDefault();
-        var scope = this;
 
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then((userCredential) => {
                 // Signed in
                 var user = userCredential.user;
-                scope.setState({redirect: true})
+                this.setState({redirect: true})
 
             })
             .catch((error) => {
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                console.log(errorCode, errorMessage);
+                this.setState({errorMsg: error.message})
             });
 
     }
@@ -72,9 +69,12 @@ class SignUp extends Component<SignUpProps, SignUpState> {
             <Container maxWidth="sm">
                 <div>
 
+
+                    <img alt="Charta logo" src={"./Logo.png"}/>
                     <Typography component="h1" variant="h5" align="center">
                         Sign up
                     </Typography>
+
                     <form noValidate>
                         <TextField
                             variant="outlined"
@@ -134,6 +134,8 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                             control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
                         />
+                        <p>{this.state.errorMsg}</p>
+
                         <Button
                             type="submit"
                             fullWidth

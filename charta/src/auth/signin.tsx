@@ -15,6 +15,7 @@ import { withRouter } from 'react-router'
 import {RouteComponentProps} from "react-router";
 import { Redirect } from 'react-router'
 import {Link } from 'react-router-dom';
+import Modal from '@material-ui/core/Modal';
 
 interface SigninProps extends RouteComponentProps<any> {
 
@@ -24,7 +25,9 @@ interface SigninProps extends RouteComponentProps<any> {
 interface SigninState{
     email: string,
     password: string,
-    redirect: boolean
+    redirect: boolean,
+    failed: boolean,
+    errorMsg: string
 }
 
 class Signin extends Component<SigninProps, SigninState> {
@@ -47,7 +50,9 @@ class Signin extends Component<SigninProps, SigninState> {
     constructor(props: SigninProps) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.state = {email: '',  password: '', redirect: false}
+        this.state = {email: '',  password: '', redirect: false, failed: false, errorMsg: ''}
+        this.handleEmailReset = this.handleEmailReset.bind(this);
+
     }
 
 
@@ -64,8 +69,21 @@ class Signin extends Component<SigninProps, SigninState> {
             })
             .catch((error) => {
                 console.log(error.code, error.message);
+                this.setState({failed: true})
+                this.setState({errorMsg: error.message})
+
             });
     }
+
+    handleClose() {
+
+    }
+
+    handleEmailReset() {
+
+    }
+
+
 
 
     render() {
@@ -77,7 +95,7 @@ class Signin extends Component<SigninProps, SigninState> {
         return(
             <Container maxWidth="sm">
                 <div>
-
+                    <img alt="Charta logo" src={"./Logo.png"}/>
                     <Typography component="h1" variant="h5" align="center">
                         Sign in
                     </Typography>
@@ -122,6 +140,8 @@ class Signin extends Component<SigninProps, SigninState> {
                             control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
                         />
+                        <p>{this.state.errorMsg}</p>
+
                         <Button
                             type="submit"
                             fullWidth
@@ -129,14 +149,16 @@ class Signin extends Component<SigninProps, SigninState> {
                             color="primary"
                             onClick={this.handleSubmit}
                         >
-                            Sign In
+                            <strong>Sign In</strong>
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <p>
+                                <p onClick={this.handleEmailReset}>
                                     Forgot password?
                                 </p>
                             </Grid>
+
+
                             <Grid item>
                                 <Link to="/signup">
                                     {"Don't have an account? Sign Up"}
@@ -145,6 +167,8 @@ class Signin extends Component<SigninProps, SigninState> {
                         </Grid>
                     </form>
                 </div>
+
+
             </Container>
 
         );

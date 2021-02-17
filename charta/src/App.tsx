@@ -3,12 +3,16 @@ import {Component} from 'react';
 import './App.css';
 
 
+// @ts-ignore
 import SignIn from './auth/signin';
-import SignUp from './auth/signup';
+// @ts-ignore
+import SignUp from "./auth/signup";
 import NotFound from './components/notfound'
 
-import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect} from "react-router-dom";
+// @ts-ignore
 import Home from './components/home';
+import Settings from './account/settings';
 
 
 class App extends Component {
@@ -20,7 +24,8 @@ class App extends Component {
                     <Route path="/home" component={Home}/>
                     <Route exact path="/signin" component={SignIn} />
                     <Route exact path="/signup" component={SignUp} />
-                    <Route component={NotFound} />
+                    <Route exact path="/settings" component={Settings} />
+                    <Redirect to="/home" />
                 </Switch>
 
             </Router>

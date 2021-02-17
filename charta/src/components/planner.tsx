@@ -6,8 +6,7 @@ import 'firebase/firestore'
 import '../firebase';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
+import Container from '@material-ui/core/Container';
 
 interface PlannerState {
     loading: boolean;
@@ -21,8 +20,8 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
     async componentDidMount() {
         const db = firebase.firestore();
-
-        const userRef = db.collection('users').doc('ruben1');
+        let user = firebase.auth().currentUser;
+        const userRef = db.collection('users').doc(user?.uid);
         const doc = await userRef.get();
 
 
@@ -47,7 +46,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
     render() {
         return(
-            <div>
+            <Container>
                 <Backdrop  open={this.state.loading}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
@@ -77,7 +76,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
                 </Grid>
 
-            </div>
+            </Container>
 
 
         );
