@@ -32,6 +32,6 @@ button {
   background-color: #6FCF97 !important;
 }
 
-TextField {
-  border-color: white;
+#title {
+  color: white;
 }
