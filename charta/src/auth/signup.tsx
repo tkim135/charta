@@ -15,6 +15,7 @@ import { withRouter } from 'react-router'
 import {RouteComponentProps} from "react-router";
 import { Redirect } from 'react-router'
 import logo from '.Logo.png';
+import {Link} from "react-router-dom";
 
 
 interface SignUpProps extends RouteComponentProps<any> {
@@ -45,6 +46,18 @@ class SignUp extends Component<SignUpProps, SignUpState> {
 
     handleSubmit(e:  React.FormEvent) {
         e.preventDefault();
+
+        if(!this.state.email.endsWith("@stanford.edu")) {
+            this.setState({errorMsg: "Email must be a stanford email"});
+            return;
+        }
+
+        if(this.state.password !== this.state.confirmPassword) {
+            this.setState({errorMsg: "Passwords must match"});
+            return;
+        }
+
+
 
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then((userCredential) => {
@@ -131,8 +144,8 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                                 )}}
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
+                            control={<Checkbox color="primary" required={true}/>}
+                            label="I agree to the terms and conditions"
                         />
                         <p>{this.state.errorMsg}</p>
 
@@ -146,7 +159,11 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                             Sign Up
                         </Button>
                         <Grid container>
-
+                            <Grid item>
+                                <Link to="/signin">
+                                    {"Have an account?"}
+                                </Link>
+                            </Grid>
                         </Grid>
                     </form>
                 </div>
