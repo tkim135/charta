@@ -4,7 +4,6 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
@@ -20,7 +19,6 @@ import TextField from '@material-ui/core/TextField';
 import firebase from "firebase";
 import 'firebase/firestore'
 import '../firebase';
-import Course from '../data/course';
 import UserCourse from '../data/usercourse';
 
 interface QuarterState {
@@ -140,7 +138,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
         return (
             <Accordion>
-                <AccordionSummary>{this.props.name}</AccordionSummary>
+                <AccordionSummary className="quarter-summary"><h1 id="quarter-title"><strong>{this.props.name}</strong></h1></AccordionSummary>
                 <AccordionDetails>
                     <TableContainer >
                         <Table aria-label="simple table">

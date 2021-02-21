@@ -30,13 +30,24 @@ header {
 
 button {
   background-color: #6FCF97 !important;
+  color: white !important;
 }
 
 #title {
   color: white;
+
 }
 
 
 h1{
   font-family: 'Varela', sans-serif;
+}
+
+.quarter-summary {
+  background-color: #6FCF97 !important;
+}
+
+#quarter-title{
+  color: white !important;
+
 }
