@@ -21,6 +21,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
+import 'firebase/firestore'
+import '../firebase';
 
 
 interface SettingsProps extends RouteComponentProps<any> {

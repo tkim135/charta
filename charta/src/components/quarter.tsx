@@ -20,7 +20,9 @@ import TextField from '@material-ui/core/TextField';
 import firebase from "firebase";
 import 'firebase/firestore'
 import '../firebase';
-
+import Course from '../data/course';
+import UserCourse from '../data/usercourse';
+// import QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot;
 
 interface QuarterState {
     open: boolean;
@@ -35,18 +37,56 @@ interface QuarterState {
 interface QuarterProps {
     name: string
 }
-
 class Quarter extends Component<QuarterProps, QuarterState> {
+
+    async loadCourse() {
+        const db = firebase.firestore();
+
+        // const courseRef = db.collection('courses').doc(id);
+        // const course = await courseRef.get();
+        //
+        // let course = new UserCourse();
+
+
+        // return course;
+
+    }
+
+
+    // load the courses for this quarter
+   async loadCourses(path: string) {
+       const db = firebase.firestore();
+
+       // doc.data()?.["quarters"];
+
+       let courses: Array<UserCourse>;
+
+       // iterate over courses in this quarter
+       // db.collection(path).get().then((querySnapshot) => {
+       //
+       //      // get the course
+       //     querySnapshot.forEach((doc) =>  {
+       //         let course = await this.loadCourse(doc);
+       //         courses.push(course);
+       //     })
+       //
+       //
+       // });
+       //
+       // this.setState({courses: courses})
+
+   }
 
     async componentDidMount() {
         const db = firebase.firestore();
+        let user = firebase.auth().currentUser;
+        const userRef = db.collection('users').doc(user?.uid);
+        const userData = await userRef.get();
 
-        const userRef = db.collection('users').doc('ruben1');
-        const doc = await userRef.get();
-        if (!doc.exists) {
-            console.log('No such document!');
+        if (!userData.exists) {
+            console.log('User data could not be found');
         } else {
-            console.log('Document data:', doc.data());
+            await this.loadCourses(`users/${user?.uid}/${this.props.name}`);
         }
 
     }
@@ -55,19 +95,12 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     constructor(props: QuarterProps) {
         super(props);
 
-        const courses = [
-            this.createData('CS110', 'Principles of Computer Systems', 5, 'A', 'CS Core'),
-            this.createData('MATH51', 'Linear Algebra and Differential Calculus of Several Variables', 5, 'A', "Math elective"),
-            this.createData('BIOE131', 'Ethics in Bioengineering', 3, 'A', "TiS"),
-            this.createData('PSYCH1', 'Introduction to Psychology', 5, 'A', "Fun"),
-        ];
-
-
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.addCourse = this.addCourse.bind(this);
+        this.loadCourses = this.loadCourses.bind(this);
 
-        this.state = {open: false, onClick: this.handleOpen, courses: courses, newCourse: '', newTitle: '', newGrade: '', newUnits: 0, newReason: ''};
+        this.state = {open: false, onClick: this.handleOpen, courses: [], newCourse: '', newTitle: '', newGrade: '', newUnits: 0, newReason: ''};
 
 
     }
@@ -85,6 +118,9 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         this.state.courses.push(this.createData(this.state.newCourse, this.state.newTitle, this.state.newUnits, this.state.newGrade, this.state.newReason));
 
         const db = firebase.firestore();
+        let user = firebase.auth().currentUser;
+        const userRef = db.collection('users').doc(user?.uid);
+        const doc = await userRef.get();
 
         // const userRef = db.collection('users').doc('ruben1');
         // const doc = await userRef.get();
@@ -122,12 +158,12 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 {this.state.courses.map((course) => (
                                     <TableRow key={course.number}>
                                         <TableCell component="th" scope="row">
-                                            {course.number}
+                                            {course.code}
                                         </TableCell>
                                         <TableCell align="right">{course.title}</TableCell>
                                         <TableCell align="right">{course.units}</TableCell>
-                                        <TableCell align="right">{course.grade}</TableCell>
-                                        <TableCell align="right">{course.reason}</TableCell>
+                                        {/*<TableCell align="right">{course.grade}</TableCell>*/}
+                                        {/*<TableCell align="right">{course.reason}</TableCell>*/}
                                     </TableRow>
                                 ))}
                             </TableBody>
