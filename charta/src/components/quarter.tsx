@@ -138,7 +138,11 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
         return (
             <Accordion>
-                <AccordionSummary className="quarter-summary"><h1 id="quarter-title"><strong>{this.props.name}</strong></h1></AccordionSummary>
+                <AccordionSummary className="quarter-summary">
+                    <div className="">
+                        <h1 id="quarter-title"><strong>{this.props.name}</strong></h1>
+                    </div>
+                </AccordionSummary>
                 <AccordionDetails>
                     <TableContainer >
                         <Table aria-label="simple table">
