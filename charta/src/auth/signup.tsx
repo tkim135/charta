@@ -14,8 +14,8 @@ import "firebase/auth";
 import { withRouter } from 'react-router'
 import {RouteComponentProps} from "react-router";
 import { Redirect } from 'react-router'
-import logo from '.Logo.png';
-
+import {Link} from "react-router-dom";
+import PersonIcon from '@material-ui/icons/Person';
 
 interface SignUpProps extends RouteComponentProps<any> {
 
@@ -23,11 +23,13 @@ interface SignUpProps extends RouteComponentProps<any> {
 
 
 interface SignUpState{
+    firstName: string,
     email: string,
     password: string,
     confirmPassword: string,
     redirect: boolean,
-    errorMsg: string
+    errorMsg: string,
+    agree: boolean
 }
 
 
@@ -37,25 +39,51 @@ class SignUp extends Component<SignUpProps, SignUpState> {
     constructor(props: SignUpProps) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.createAccount = this.createAccount.bind(this);
 
-        this.state = {email: '',  password: '', confirmPassword: '', redirect: false, errorMsg: ''}
+        this.state = {firstName: '', email: '',  password: '', confirmPassword: '', redirect: false, errorMsg: '', agree: false}
 
     }
 
 
-    handleSubmit(e:  React.FormEvent) {
-        e.preventDefault();
-
+    async createAccount() {
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then((userCredential) => {
+            .then(async (userCredential) => {
                 // Signed in
-                var user = userCredential.user;
+                let user = userCredential.user;
+                const db = firebase.firestore();
+
+                await db.collection('users').doc(user?.uid).set({"firstName": this.state.firstName, "quarters": []});
+
+                // user?.uid
                 this.setState({redirect: true})
 
             })
             .catch((error) => {
                 this.setState({errorMsg: error.message})
             });
+    }
+
+
+    async handleSubmit(e:  React.FormEvent) {
+        e.preventDefault();
+
+        if(!this.state.email.endsWith("@stanford.edu")) {
+            this.setState({errorMsg: "Email must be a stanford email"});
+            return;
+        }
+
+        if(this.state.password !== this.state.confirmPassword) {
+            this.setState({errorMsg: "Passwords must match"});
+            return;
+        }
+
+        // if(!this.state.agree) {
+        //     this.setState({errorMsg: "You must agree to the terms and conditions"});
+        //     return;
+        // }
+
+        await this.createAccount();
 
     }
 
@@ -69,13 +97,33 @@ class SignUp extends Component<SignUpProps, SignUpState> {
             <Container maxWidth="sm">
                 <div>
 
-
                     <img alt="Charta logo" src={"./Logo.png"}/>
-                    <Typography component="h1" variant="h5" align="center">
-                        Sign up
-                    </Typography>
+                    <div>
+                        <h1>
+                            Sign up
+                        </h1>
+                    </div>
+
 
                     <form noValidate>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="firstName"
+                            label="First name"
+                            name="firstName"
+                            onChange={(evt) => this.setState({firstName: evt.target.value})}
+                            autoFocus
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <PersonIcon />
+                                    </InputAdornment>
+                                )}}
+                        />
+
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -130,10 +178,10 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                                     </InputAdornment>
                                 )}}
                         />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
-                        />
+                        {/*<FormControlLabel*/}
+                        {/*    control={<Checkbox color="primary" required={true} value={this.state.agree}/>}*/}
+                        {/*    label="I agree to the terms and conditions"*/}
+                        {/*/>*/}
                         <p>{this.state.errorMsg}</p>
 
                         <Button
@@ -146,7 +194,11 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                             Sign Up
                         </Button>
                         <Grid container>
-
+                            <Grid item>
+                                <Link to="/signin">
+                                    {"Have an account?"}
+                                </Link>
+                            </Grid>
                         </Grid>
                     </form>
                 </div>

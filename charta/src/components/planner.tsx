@@ -11,6 +11,7 @@ import Container from '@material-ui/core/Container';
 interface PlannerState {
     loading: boolean;
     quarters: Array<string>;
+    empty: boolean;
 }
 
 interface PlannerProps {
@@ -27,6 +28,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
         if (!doc.exists) {
             console.log('No such document!');
+            this.setState({empty: true})
         } else {
             console.log('Document data:', doc.data());
             let quarters = doc.data()?.quarters;
@@ -39,7 +41,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
     constructor(props: PlannerProps) {
         super(props);
-        this.state = {loading: true, quarters: []};
+        this.state = {loading: true, quarters: [], empty: false};
 
     }
 
@@ -59,20 +61,20 @@ class Planner extends Component<PlannerProps, PlannerState> {
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
                             if(i % 3 === 0){return <Quarter name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
-                        }) : 'loading'}
+                        }) : ''}
 
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
                             if(i % 3 === 1){return <Quarter name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
-                        }) : 'loading'}
+                        }) : ''}
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
                             if(i % 3 === 2){return <Quarter name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
-                        }) : 'loading'}                    </Grid>
+                        }) : ''}                    </Grid>
 
                 </Grid>
 

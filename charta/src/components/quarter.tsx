@@ -4,7 +4,6 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
@@ -20,7 +19,7 @@ import TextField from '@material-ui/core/TextField';
 import firebase from "firebase";
 import 'firebase/firestore'
 import '../firebase';
-
+import UserCourse from '../data/usercourse';
 
 interface QuarterState {
     open: boolean;
@@ -31,22 +30,54 @@ interface QuarterState {
     newUnits: number;
     newGrade: string;
     newReason: string;
+    totalUnits: number;
 }
 interface QuarterProps {
     name: string
 }
-
 class Quarter extends Component<QuarterProps, QuarterState> {
+
+
+    // load the courses for this quarter
+   async loadCourses(path: string) {
+       const db = firebase.firestore();
+
+       // doc.data()?.["quarters"];
+
+       let courses: Array<UserCourse> = [];
+       let totalUnits = 0;
+
+       // iterate over courses in this quarter
+       db.collection(path).get().then( (querySnapshot) => {
+
+            // get the course
+           querySnapshot.forEach(async(doc) =>  {
+               // let course = await this.loadCourse(doc);
+               let course = doc.data();
+               console.log(course);
+               courses.push(new UserCourse(course?.code, course?.reason, course?.grade, course?.units, this.props.name, course?.title));
+               totalUnits += course.units;
+           })
+
+
+       });
+
+       this.setState({courses: courses});
+       this.setState({totalUnits: totalUnits});
+
+
+   }
 
     async componentDidMount() {
         const db = firebase.firestore();
+        let user = firebase.auth().currentUser;
+        const userRef = db.collection('users').doc(user?.uid);
+        const userData = await userRef.get();
 
-        const userRef = db.collection('users').doc('ruben1');
-        const doc = await userRef.get();
-        if (!doc.exists) {
-            console.log('No such document!');
+        if (!userData.exists) {
+            console.log('User data could not be found');
         } else {
-            console.log('Document data:', doc.data());
+            await this.loadCourses(`users/${user?.uid}/${this.props.name}`);
         }
 
     }
@@ -55,20 +86,21 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     constructor(props: QuarterProps) {
         super(props);
 
-        const courses = [
-            this.createData('CS110', 'Principles of Computer Systems', 5, 'A', 'CS Core'),
-            this.createData('MATH51', 'Linear Algebra and Differential Calculus of Several Variables', 5, 'A', "Math elective"),
-            this.createData('BIOE131', 'Ethics in Bioengineering', 3, 'A', "TiS"),
-            this.createData('PSYCH1', 'Introduction to Psychology', 5, 'A', "Fun"),
-        ];
-
-
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.addCourse = this.addCourse.bind(this);
+        this.loadCourses = this.loadCourses.bind(this);
 
-        this.state = {open: false, onClick: this.handleOpen, courses: courses, newCourse: '', newTitle: '', newGrade: '', newUnits: 0, newReason: ''};
-
+        this.state = {open: false,
+                   onClick: this.handleOpen,
+                   courses: [],
+                 newCourse: '',
+                  newTitle: '',
+                  newGrade: '',
+                  newUnits: 0,
+                 newReason: '',
+                totalUnits: 0,
+                    };
 
     }
 
@@ -82,9 +114,12 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     }
 
     async addCourse() {
-        this.state.courses.push(this.createData(this.state.newCourse, this.state.newTitle, this.state.newUnits, this.state.newGrade, this.state.newReason));
+        // this.state.courses.push(new UserCourse(this.state.newCourse, this.state.newTitle, this.state.newUnits, this.state.newGrade, this.state.newReason));
 
         const db = firebase.firestore();
+        let user = firebase.auth().currentUser;
+        const userRef = db.collection('users').doc(user?.uid);
+        const doc = await userRef.get();
 
         // const userRef = db.collection('users').doc('ruben1');
         // const doc = await userRef.get();
@@ -97,17 +132,15 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         this.handleClose();
     }
 
-    createData(number: string, title: string, units: number, grade: string, reason: string) {
-        return {number, title, units, grade, reason };
-    }
+
 
     render() {
 
         return (
             <Accordion>
-                <AccordionSummary>{this.props.name}</AccordionSummary>
+                <AccordionSummary className="quarter-summary"><h1 id="quarter-title"><strong>{this.props.name}</strong></h1></AccordionSummary>
                 <AccordionDetails>
-                    <TableContainer component={Paper}>
+                    <TableContainer >
                         <Table aria-label="simple table">
                             <TableHead>
                                 <TableRow>
@@ -122,7 +155,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 {this.state.courses.map((course) => (
                                     <TableRow key={course.number}>
                                         <TableCell component="th" scope="row">
-                                            {course.number}
+                                            {course.code}
                                         </TableCell>
                                         <TableCell align="right">{course.title}</TableCell>
                                         <TableCell align="right">{course.units}</TableCell>
@@ -134,8 +167,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             <TableRow>
                                 <TableCell>Total</TableCell>
                                 <TableCell align="right"> </TableCell>
-                                <TableCell align="right">18</TableCell>
-                                <TableCell align="right">4.0</TableCell>
+                                <TableCell align="right">{this.state.totalUnits}</TableCell>
+                                <TableCell align="right"> </TableCell>
                                 <TableCell align="right"><Button onClick={this.handleOpen}><AddCircleIcon/></Button></TableCell>
 
                                 <Dialog open={this.state.open}>

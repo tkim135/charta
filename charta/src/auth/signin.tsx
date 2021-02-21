@@ -63,7 +63,6 @@ class Signin extends Component<SigninProps, SigninState> {
             .then((userCredential) => {
                 // Signed in
                 var user = userCredential.user;
-                console.log("signed in!");
                 this.setState({redirect: true });
 
             })

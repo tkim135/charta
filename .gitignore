@@ -1,3 +1,4 @@
-.DS_Store
 charta/.eslintcache
 charta/package-lock.json
+.DS_Store
+.idea

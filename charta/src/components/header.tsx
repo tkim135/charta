@@ -12,7 +12,7 @@ import {Link } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import SettingsIcon from '@material-ui/icons/Settings';
 import grey from '@material-ui/core/colors/grey';
-
+import SearchBar from "./searchbar";
 interface HeaderProps {
 
 }
@@ -56,17 +56,7 @@ class Header extends Component<HeaderProps, HeaderState>{
                     <IconButton edge="start"  color="inherit" aria-label="menu">  </IconButton>
                     <Button><h1 id="title"><Link to="/home">Charta</Link> </h1></Button>
 
-
-                    <TextField id="mainSearchBar"
-                        fullWidth={true}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon color="primary" />
-                                </InputAdornment>
-                            )}}>
-
-                    </TextField>
+                    <SearchBar/>
 
                 </Box>
                 <Link to={"settings"}><Button startIcon={<SettingsIcon style={{ color: grey[50] }}/>}/></Link>

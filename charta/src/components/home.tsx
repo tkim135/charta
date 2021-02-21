@@ -8,10 +8,10 @@ import Footer from './footer';
 // import ClassCard from './card';
 // @ts-ignore
 import Planner from './planner';
-
-import { BrowserRouter as Router} from "react-router-dom";
+import Recommendation from './recommendation';
 import firebase from "firebase";
 import {Redirect} from "react-router";
+import Grid from '@material-ui/core/Grid';
 
 interface HomeState {
     signedIn: boolean
@@ -35,12 +35,26 @@ class Home extends Component<HomeProps, HomeState>{
             return (
                 <div className="flex flex-col h-screen justify-between">
                     <Header/>
-                    {/*<ClassCard name="Math 51" term="Spring 2021"/>*/}
-                    {/*<ClassCard name="CS 110" term="Winter 2021"/>*/}
-                    <Planner/>
+
+
+                    {/*<Planner/>*/}
+                    <Grid container spacing={3}>
+                        <Grid item xs={3}>
+                            <Recommendation/>
+
+                        </Grid>
+                        <Grid item xs={9}>
+                            <Planner/>
+
+                        </Grid>
+                    </Grid>
                     <Footer/>
 
+
                 </div>
+
+
+
             );
         }
         else{
@@ -54,7 +68,6 @@ class Home extends Component<HomeProps, HomeState>{
 
 
 export default Home;
-
 
 
 
