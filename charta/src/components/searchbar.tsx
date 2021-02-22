@@ -28,16 +28,16 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
 
     constructor(props: SearchBarProps) {
         super(props);
-        this.state = {loading: false, open: false, suggestions: [], query: ''};
+        this.state = {loading: false, open: true, suggestions: [], query: ''};
 
-        this.setOpen = this.setOpen.bind(this);
-        this.onInputChange = this.onInputChange.bind(this);
+        // this.setOpen = this.setOpen.bind(this);
+        // this.onInputChange = this.onInputChange.bind(this);
 
-        this.onChange = this.onChange.bind(this);
+        // this.onChange = this.onChange.bind(this);
     }
 
     setOpen(open: boolean) {
-
+        this.setState({open: open})
     }
 
     async onInputChange(event: object, value: string) {
@@ -46,7 +46,7 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
 
         const coursesRef = await db.collection('classes');
 
-        var query = coursesRef.where('Codes', 'array-contains', value).get()
+        var query = coursesRef.where('Codes', 'array-contains', value.toUpperCase()).get()
             .then(querySnapshot => {
                 if (querySnapshot.empty) {
                     console.log("nothing found");
@@ -59,11 +59,12 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                     // }
 
                     // clear suggestions array every time new query is entered
-                    this.state.suggestions.splice(0, this.state.suggestions.length);
+                    let suggestions : Course[] = [];
 
                     querySnapshot.docs.forEach(doc => {
                         console.log(doc.data());
-                        this.state.suggestions.push(new Course(
+
+                        suggestions.push(new Course(
                             doc.data()["Codes"],
                             doc.data()["Description"],
                             doc.data()["GER"],
@@ -73,8 +74,11 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                             doc.data()["Terms"],
                             doc.data()["Title"]
                         ));
-                        console.log(this.state.suggestions);
+
                     });
+
+                    this.setState({suggestions: suggestions, query: value})
+                    console.log(this.state);
                 }
             })
             .catch(err => {
@@ -104,9 +108,17 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                     }}
                     options={this.state.suggestions}
                     getOptionSelected={(course, value) => course.title === value.title}
-                    getOptionLabel={(course) => course.title}
+                    getOptionLabel={(course) => this.state.query}
+                    renderOption={(course) => (
+                        <React.Fragment>
+                            <div>
+                                <b>{course.codes.join(', ')}: <i>{course.title}</i></b><br />
+                                {course.description}
+                            </div>
+                        </React.Fragment>
+                    )}
                     loading={this.state.loading}
-                    onInputChange={this.onInputChange}
+                    onInputChange={(event, value) => this.onInputChange(event, value)}
                     renderInput={(params) => (
                         <TextField
                             {...params}
