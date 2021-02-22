@@ -43,12 +43,10 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
     async onInputChange(event: object, value: string) {
 
         const db = firebase.firestore();
-        // const ref = db.collection("courses");
-        // const query  = ref.where("title", "array-contains", "value");
 
         const coursesRef = await db.collection('classes');
 
-        var query = coursesRef.where('title', 'array-contains', value).get()
+        var query = coursesRef.where('Codes', 'array-contains', value).get()
             .then(querySnapshot => {
                 if (querySnapshot.empty) {
                     console.log("nothing found");
@@ -59,8 +57,24 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                     //     console.log('Document data:', doc.data());
                     //
                     // }
-                    querySnapshot.docs.forEach(doc => console.log(doc.data()));
 
+                    // clear suggestions array every time new query is entered
+                    this.state.suggestions.splice(0, this.state.suggestions.length);
+
+                    querySnapshot.docs.forEach(doc => {
+                        console.log(doc.data());
+                        this.state.suggestions.push(new Course(
+                            doc.data()["Codes"],
+                            doc.data()["Description"],
+                            doc.data()["GER"],
+                            doc.data()["Grading Basis"],
+                            doc.data()["Min Units"],
+                            doc.data()["Max Units"],
+                            doc.data()["Terms"],
+                            doc.data()["Title"]
+                        ));
+                        console.log(this.state.suggestions);
+                    });
                 }
             })
             .catch(err => {
