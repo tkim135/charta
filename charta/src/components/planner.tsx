@@ -14,14 +14,24 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import DialogActions from "@material-ui/core/DialogActions";
-import TableRow from "@material-ui/core/TableRow";
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
 
 interface PlannerState {
     loading: boolean;
     quarters: Array<string>;
     empty: boolean;
     open: boolean;
-    add: boolean
+    success: boolean;
+    failure: boolean;
+    term: string;
+    year: number;
 }
 
 interface PlannerProps {
@@ -51,13 +61,43 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
     constructor(props: PlannerProps) {
         super(props);
-        this.state = {loading: true, quarters: [], empty: false, open: false, add: false};
-
+        this.state = {loading: true, quarters: [], empty: false, open: false, success: false, term: "", year: 2021, failure: false};
         this.addQuarter = this.addQuarter.bind(this);
 
     }
 
-    addQuarter() {
+    async addQuarter() {
+        this.setState({open: false});
+
+        let uid = firebase.auth().currentUser?.uid;
+        const db = firebase.firestore();
+
+        let quarter = `${this.state.term + " " + this.state.year}`;
+
+
+        const userRef = db.collection('users').doc(uid);
+
+
+        let quarters = this.state.quarters;
+        quarters.push(quarter);
+
+        this.setState({quarters: quarters});
+
+        await userRef.update({
+            quarters: quarters
+        });
+
+        db.collection(`users/${uid}/${quarter}`).doc("test").set({
+            ignore: "true"
+        }).then((res) => {
+            console.log(res);
+            this.setState({success: true});
+        }).catch((error) => {
+            console.log(error.code, error.message);
+            this.setState({failure: true});
+        });
+
+
 
     }
 
@@ -104,41 +144,38 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
                 <Dialog open={this.state.open}>
-                    <DialogTitle>Add a course</DialogTitle>
+                    <DialogTitle>Add quarter</DialogTitle>
                     <DialogContent>
-                        {/*<DialogContentText>*/}
-                        {/*    To subscribe to this website, please enter your email address here. We will send updates*/}
-                        {/*    occasionally.*/}
-                        {/*</DialogContentText>*/}
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="course"
-                            type="text"
-                            // value={this.state.newCourse}
-                            // onChange={(evt) => this.setState({newCourse: evt.target.value})}
-                            fullWidth
-                        />
 
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend">Term</FormLabel>
+                            <RadioGroup aria-label="term" name="term" value={this.state.term} onChange={(evt) => this.setState({term: evt.target.value})}
+                            >
+                                <FormControlLabel value="Fall" control={<Radio />} label="Fall" />
+                                <FormControlLabel value="Winter" control={<Radio />} label="Winter" />
+                                <FormControlLabel value="Spring" control={<Radio />} label="Spring" />
+                                <FormControlLabel value="Summer" control={<Radio />} label="Summer" />
+                            </RadioGroup>
+                        </FormControl>
                         <TextField
                             autoFocus
                             margin="dense"
-                            id="title"
-                            label="title"
-                            type="text"
-                            // onChange={(evt) => this.setState({newTitle: evt.target.value})}
+                            label="year"
+                            type="number"
+                            value={this.state.year}
+
+                            onChange={(evt) => this.setState({year: parseInt(evt.target.value)})}
                             fullWidth
                         />
 
 
                     </DialogContent>
                     <DialogActions>
-                        <Button  variant="outlined" color="primary"  onClick={() => this.setState({open: false, add: false})} className="cancelButton">
+                        <Button  variant="outlined" color="primary"  onClick={() => this.setState({open: false})} className="cancelButton">
                             Cancel
                         </Button>
 
-                        <Button onClick={() => this.setState({open: false, add: true})} color="primary">
+                        <Button onClick={this.addQuarter} color="primary">
                             Add
                         </Button>
                     </DialogActions>
@@ -147,9 +184,29 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
 
+                <div>
+                    {/*<Button variant="outlined" onClick={() => this.setState({success: true})}>*/}
+                    {/*    Open success snackbar*/}
+                    {/*</Button>*/}
+
+                    {/*<Button variant="outlined" onClick={() => this.setState({failure: true})}>*/}
+                    {/*    Open error snackbar*/}
+                    {/*</Button>*/}
+
+                    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>
+                        <MuiAlert severity="success">
+                            Quarter added! 😃
+                        </MuiAlert>
+                    </Snackbar>
+
+                    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>
+                        <MuiAlert severity="warning">
+                            Oops 🥴... something went wrong
+                        </MuiAlert>
+                    </Snackbar>
+                </div>
+
             </Container>
-
-
         );
     }
 
