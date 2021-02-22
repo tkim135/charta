@@ -41,6 +41,7 @@ button {
 
 h1{
   font-family: 'Varela', sans-serif;
+  font-size: 1.2em;
 }
 
 .quarter-summary {
@@ -50,4 +51,10 @@ h1{
 #quarter-title{
   color: white !important;
 
+}
+
+.cancelButton {
+  background-color: white !important;
+  outline-color: #6FCF97 !important;
+  color: #6FCF97 !important;
 }
