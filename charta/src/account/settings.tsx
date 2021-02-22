@@ -9,20 +9,16 @@ import { withRouter } from 'react-router'
 import {RouteComponentProps} from "react-router";
 import Header from "../components/header";
 import Footer from '../components/footer';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import SettingsIcon from '@material-ui/icons/Settings';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import 'firebase/firestore'
 import '../firebase';
+import TextField from "@material-ui/core/TextField";
+import Grid from '@material-ui/core/Grid';
+import EditIcon from '@material-ui/icons/Edit';
+import Button from '@material-ui/core/Button';
 
 
 interface SettingsProps extends RouteComponentProps<any> {
@@ -31,7 +27,10 @@ interface SettingsProps extends RouteComponentProps<any> {
 
 interface SettingsState{
     value: number,
-    index: number
+    index: number,
+    email: string,
+    firstName: string,
+    edit: boolean
 }
 
 interface TabPanelProps {
@@ -71,10 +70,32 @@ function a11yProps(index: any) {
 
 class Settings extends Component<SettingsProps, SettingsState> {
 
+    async componentDidMount() {
+        const db = firebase.firestore();
+        let user = firebase.auth().currentUser;
+        const userRef = db.collection('users').doc(user?.uid);
+        const doc = await userRef.get();
+
+
+        if (!doc.exists) {
+            console.log('No such document!');
+        } else {
+            let email = user?.email ? user?.email : "";
+
+            this.setState({email: email});
+            this.setState({firstName: doc.data()?.firstName});
+
+        }
+    }
+
+    async updateAccount() {
+
+    }
+
 
     constructor(props: SettingsProps) {
         super(props);
-        this.state = {value: 0, index: 0}
+        this.state = {value: 0, index: 0, email: '', firstName: '', edit: false}
         this.handleChange = this.handleChange.bind(this);
 
     }
@@ -105,16 +126,79 @@ class Settings extends Component<SettingsProps, SettingsState> {
                         <TabPanel value={this.state.value} index={0}>
                             <div>
                                 <h1>Account</h1>
+
+                                <Grid container spacing={3}>
+                                    <Grid item xs={8}>
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            disabled={true}
+                                            fullWidth
+                                            id="email"
+                                            label="Email Address"
+                                            name="email"
+                                            autoComplete="email"
+                                            value={this.state.email}
+                                            onChange={(evt) => this.setState({email: evt.target.value})}
+                                            autoFocus
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <EmailIcon />
+                                                    </InputAdornment>
+                                                ),
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <EditIcon/>
+                                                    </InputAdornment>
+                                                )
+
+                                            }}
+                                        />
+
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            disabled={true}
+                                            fullWidth
+                                            id="firstName"
+                                            label="First name"
+                                            name="name"
+                                            autoComplete="name"
+                                            value={this.state.firstName}
+                                            onChange={(evt) => this.setState({firstName: evt.target.value})}
+                                            autoFocus
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <EmailIcon />
+                                                    </InputAdornment>
+                                                ),
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <EditIcon/>
+                                                    </InputAdornment>
+                                                )
+
+                                            }}
+                                        />
+                                    </Grid>
+                                </Grid>
+
+
                             </div>
                         </TabPanel>
                         <TabPanel value={this.state.value} index={1}>
                             <div>
                                 <h1>Settings</h1>
+
+
                             </div>
                         </TabPanel>
                         <TabPanel value={this.state.value} index={2}>
                             <div>
                                 <h1>About</h1>
+                                <p>Charta is the work of some computer science students making it easier to graduate.</p>
                             </div>
                         </TabPanel>
 
