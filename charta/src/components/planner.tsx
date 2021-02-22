@@ -21,6 +21,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 
 interface PlannerState {
@@ -32,12 +33,16 @@ interface PlannerState {
     failure: boolean;
     term: string;
     year: number;
+    welcome: boolean;
+    firstName: string;
 }
 
 interface PlannerProps {
+
 }
 
 class Planner extends Component<PlannerProps, PlannerState> {
+
 
     async componentDidMount() {
         const db = firebase.firestore();
@@ -47,12 +52,26 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
         if (!doc.exists) {
-            console.log('No such document!');
-            this.setState({empty: true})
+            console.log('No such user!');
+
         } else {
             console.log('Document data:', doc.data());
             let quarters = doc.data()?.quarters;
-            this.setState({quarters: quarters});
+
+            this.setState({firstName: doc.data()?.firstName});
+
+            if(quarters) {
+                this.setState({quarters: quarters});
+            }
+
+            else {
+                this.setState({quarters: []});
+            }
+
+            if(this.state.quarters.length == 0){
+                this.setState({welcome: true});
+            }
+
         }
 
         this.setState({loading: false});
@@ -61,8 +80,9 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
     constructor(props: PlannerProps) {
         super(props);
-        this.state = {loading: true, quarters: [], empty: false, open: false, success: false, term: "", year: 2021, failure: false};
+        this.state = {loading: true, quarters: [], empty: false, open: false, success: false, term: "", year: 2021, failure: false, welcome: false, firstName: ""};
         this.addQuarter = this.addQuarter.bind(this);
+
 
     }
 
@@ -74,9 +94,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
         let quarter = `${this.state.term + " " + this.state.year}`;
 
-
         const userRef = db.collection('users').doc(uid);
-
 
         let quarters = this.state.quarters;
         quarters.push(quarter);
@@ -97,12 +115,19 @@ class Planner extends Component<PlannerProps, PlannerState> {
             this.setState({failure: true});
         });
 
-
-
     }
 
     render() {
+        const theme = createMuiTheme({
+            palette: {
+                primary: { main: "#6FCF97" },
+                secondary: { main: '#6FCF97' },
+            },
+        });
+
         return(
+            <MuiThemeProvider theme={theme}>
+
             <Container>
                 <Backdrop  open={this.state.loading}>
                     <CircularProgress color="inherit" />
@@ -144,14 +169,14 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
                 <Dialog open={this.state.open}>
-                    <DialogTitle>Add quarter</DialogTitle>
+                    <DialogTitle><h1 className="text-center">Add quarter</h1></DialogTitle>
                     <DialogContent>
 
                         <FormControl component="fieldset">
                             <FormLabel component="legend">Term</FormLabel>
                             <RadioGroup aria-label="term" name="term" value={this.state.term} onChange={(evt) => this.setState({term: evt.target.value})}
                             >
-                                <FormControlLabel value="Fall" control={<Radio />} label="Fall" />
+                                <FormControlLabel value="Fall" control={<Radio color="secondary"/>} label="Fall" />
                                 <FormControlLabel value="Winter" control={<Radio />} label="Winter" />
                                 <FormControlLabel value="Spring" control={<Radio />} label="Spring" />
                                 <FormControlLabel value="Summer" control={<Radio />} label="Summer" />
@@ -179,20 +204,25 @@ class Planner extends Component<PlannerProps, PlannerState> {
                             Add
                         </Button>
                     </DialogActions>
-
                 </Dialog>
 
 
+                <Dialog open={this.state.welcome && !this.state.loading}>
+                    <DialogTitle><h1 className="text-center">Welcome, {this.state.firstName} 👋 </h1></DialogTitle>
+                    <DialogContent>
+                        <Container maxWidth="sm">
+                            <p>We're glad that you're here. Feel free to look up courses, plan your quarters, or find study groups.</p>
+                        </Container>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={()=> this.setState({welcome: false})} color="primary">
+                            Let's get started
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
 
                 <div>
-                    {/*<Button variant="outlined" onClick={() => this.setState({success: true})}>*/}
-                    {/*    Open success snackbar*/}
-                    {/*</Button>*/}
-
-                    {/*<Button variant="outlined" onClick={() => this.setState({failure: true})}>*/}
-                    {/*    Open error snackbar*/}
-                    {/*</Button>*/}
-
                     <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>
                         <MuiAlert severity="success">
                             Quarter added! 😃
@@ -207,6 +237,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 </div>
 
             </Container>
+            </MuiThemeProvider>
         );
     }
 

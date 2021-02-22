@@ -19,5 +19,5 @@ code {
 }
 
 *{
-    font-family: 'Varela', sans-serif;
+    font-family: 'Varela', sans-serif !important;
 }
