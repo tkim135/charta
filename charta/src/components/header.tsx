@@ -18,23 +18,34 @@ interface HeaderProps {
 }
 
 interface HeaderState {
-    displayName: string
+    firstName: string
 }
 
 
 
 class Header extends Component<HeaderProps, HeaderState>{
 
-    componentDidMount() {
-        let displayName = firebase.auth().currentUser?.displayName;
-        if(displayName) this.setState({displayName: displayName});
+    async componentDidMount() {
+
+        const db = firebase.firestore();
+        let user = firebase.auth().currentUser;
+        const userRef = db.collection('users').doc(user?.uid);
+        const doc = await userRef.get();
+
+        if (!doc.exists) {
+            console.log('No such user!');
+
+        } else {
+            this.setState({firstName: doc.data()?.firstName});
+        }
+
     }
 
 
     constructor(props: HeaderProps) {
         super(props);
         this.handleSignout = this.handleSignout.bind(this);
-        this.state = {displayName: ""};
+        this.state = {firstName: ""};
     }
 
     handleSignout() {
@@ -59,9 +70,10 @@ class Header extends Component<HeaderProps, HeaderState>{
                     <SearchBar/>
 
                 </Box>
-                <Link to={"settings"}><Button startIcon={<SettingsIcon style={{ color: grey[50] }}/>}/></Link>
-                {this.state.displayName ?  <h1>Welcome, {this.state.displayName}</h1> : <h1></h1>}
+                {this.state.firstName ?  <h1>Welcome, {this.state.firstName}</h1> : <h1></h1>}
+
                 <Button color="inherit" onClick={this.handleSignout}><Link to="/signin">Sign out</Link></Button>
+                <Link to={"settings"}><Button startIcon={<SettingsIcon style={{ color: grey[50] }}/>}/></Link>
 
             </Toolbar>
               
