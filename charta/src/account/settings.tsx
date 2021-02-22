@@ -2,7 +2,8 @@ import React, {Component} from "react";
 import Container from '@material-ui/core/Container';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import EmailIcon from '@material-ui/icons/Email';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import firebase from "firebase/app";
 import "firebase/auth";
 import { withRouter } from 'react-router'
@@ -30,7 +31,10 @@ interface SettingsState{
     index: number,
     email: string,
     firstName: string,
-    edit: boolean
+    edit: boolean,
+    success: boolean,
+    failure: boolean,
+    errorMsg: string,
 }
 
 interface TabPanelProps {
@@ -89,14 +93,65 @@ class Settings extends Component<SettingsProps, SettingsState> {
     }
 
     async updateAccount() {
+        console.log("update account");
+        let user = firebase.auth().currentUser;
+        let uid = user?.uid;
+        const db = firebase.firestore();
+
+        const userRef = db.collection('users').doc(uid);
+
+        let success = false;
+        let failure = false;
+
+        userRef.update({
+            firstName: this.state.firstName
+        }).then((res) => {
+            console.log(res);
+            success = true;
+
+        }).catch((err) => {
+            console.log(err);
+            failure = true;
+
+            this.setState({errorMsg: err.message});
+
+
+        });
+
+
+        let email = this.state.email !== '' ? this.state.email : user?.email;
+
+        let scope = this;
+
+        if (email != null) {
+            user?.updateEmail(email).then((res) => {
+                console.log(res);
+
+            }).catch(function (err) {
+                console.log(err);
+                success = false;
+
+                scope.setState({errorMsg: err.message});
+
+
+            });
+        }
+
+
+        this.setState({success: success});
+        this.setState({failure: failure});
+
+
 
     }
 
 
     constructor(props: SettingsProps) {
         super(props);
-        this.state = {value: 0, index: 0, email: '', firstName: '', edit: false}
+        this.state = {value: 0, index: 0, email: '', firstName: '', edit: false, failure: false, success: false, errorMsg: ''}
         this.handleChange = this.handleChange.bind(this);
+
+        this.updateAccount = this.updateAccount.bind(this);
 
     }
 
@@ -132,7 +187,7 @@ class Settings extends Component<SettingsProps, SettingsState> {
                                         <TextField
                                             variant="outlined"
                                             margin="normal"
-                                            disabled={true}
+                                            disabled={!this.state.edit}
                                             fullWidth
                                             id="email"
                                             label="Email Address"
@@ -148,9 +203,11 @@ class Settings extends Component<SettingsProps, SettingsState> {
                                                     </InputAdornment>
                                                 ),
                                                 endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <EditIcon/>
-                                                    </InputAdornment>
+                                                        <InputAdornment position="end">
+                                                            <span style={{cursor: "pointer"}} onClick={() => this.setState({edit: true})}>
+                                                                <EditIcon/>
+                                                            </span>
+                                                        </InputAdornment>
                                                 )
 
                                             }}
@@ -159,7 +216,7 @@ class Settings extends Component<SettingsProps, SettingsState> {
                                         <TextField
                                             variant="outlined"
                                             margin="normal"
-                                            disabled={true}
+                                            disabled={!this.state.edit}
                                             fullWidth
                                             id="firstName"
                                             label="First name"
@@ -175,13 +232,18 @@ class Settings extends Component<SettingsProps, SettingsState> {
                                                     </InputAdornment>
                                                 ),
                                                 endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <EditIcon/>
-                                                    </InputAdornment>
+                                                    <span style={{cursor: "pointer"}} onClick={() => this.setState({edit: true})}>
+                                                        <InputAdornment position="end">
+                                                            <EditIcon/>
+                                                        </InputAdornment>
+                                                    </span>
+
                                                 )
 
                                             }}
                                         />
+
+                                        <Button onClick={this.updateAccount}>Save</Button>
                                     </Grid>
                                 </Grid>
 
@@ -205,6 +267,25 @@ class Settings extends Component<SettingsProps, SettingsState> {
                     </div>
 
                 </Container>
+
+                <div>
+                    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>
+                        <MuiAlert severity="success">
+                            Account updated! 😃
+                        </MuiAlert>
+                    </Snackbar>
+
+                    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>
+                        <MuiAlert severity="warning">
+                            Oops 🥴... something went wrong
+
+                            {this.state.errorMsg}
+
+                        </MuiAlert>
+                    </Snackbar>
+                </div>
+
+
                 <Footer/>
             </div>
 
