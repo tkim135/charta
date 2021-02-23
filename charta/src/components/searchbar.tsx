@@ -8,6 +8,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import firebase from "firebase/app";
 import "firebase/auth";
 import Course from "../data/course";
+import { Link } from 'react-router-dom';
 
 
 interface SearchBarState {
@@ -65,6 +66,7 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                         console.log(doc.data());
 
                         suggestions.push(new Course(
+                            doc.id,
                             doc.data()["Codes"],
                             doc.data()["Description"],
                             doc.data()["GER"],
@@ -111,10 +113,12 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                     getOptionLabel={(course) => this.state.query}
                     renderOption={(course) => (
                         <React.Fragment>
-                            <div>
-                                <b>{course.codes.join(', ')}: <i>{course.title}</i></b><br />
-                                {course.description}
-                            </div>
+                            <Link to={'/search/'+course.id}>
+                                <div>
+                                    <b>{course.codes.join(', ')}: <i>{course.title}</i></b><br />
+                                    {course.description}
+                                </div>
+                            </Link>
                         </React.Fragment>
                     )}
                     loading={this.state.loading}

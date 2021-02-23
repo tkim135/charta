@@ -1,4 +1,5 @@
 class Course {
+    id: string;
     codes: Array<string>;
     description: string;
     GER: Array<string>;
@@ -8,7 +9,8 @@ class Course {
     terms: Array<string>;
     title: string;
 
-    constructor(codes: Array<string>, description: string, GER: Array<string>, gradingBasis: string, minUnits: number, maxUnits: number, terms: Array<string>, title: string) {
+    constructor(id: string, codes: Array<string>, description: string, GER: Array<string>, gradingBasis: string, minUnits: number, maxUnits: number, terms: Array<string>, title: string) {
+        this.id = id;
         this.codes = codes;
         this.description = description;
         this.GER = GER;

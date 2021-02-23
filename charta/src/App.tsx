@@ -13,6 +13,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect} from "react-router-do
 // @ts-ignore
 import Home from './components/home';
 import Settings from './account/settings';
+import SearchResults from './components/searchresults';
 
 
 class App extends Component {
@@ -25,6 +26,7 @@ class App extends Component {
                     <Route exact path="/signin" component={SignIn} />
                     <Route exact path="/signup" component={SignUp} />
                     <Route exact path="/settings" component={Settings} />
+                    <Route path="/search/:courseId" component={SearchResults} />
                     <Redirect to="/home" />
                 </Switch>
 
