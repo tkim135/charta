@@ -1,4 +1,4 @@
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 import React, {Component} from 'react';
 import firebase from "firebase";
 import 'firebase/firestore';
@@ -143,4 +143,4 @@ class SearchResults extends Component<SearchResultProps & RouteComponentProps, S
     }
 }
 
-export default SearchResults;
+export default withRouter(SearchResults);
