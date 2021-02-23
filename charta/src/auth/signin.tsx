@@ -15,7 +15,6 @@ import { withRouter } from 'react-router'
 import {RouteComponentProps} from "react-router";
 import { Redirect } from 'react-router'
 import {Link } from 'react-router-dom';
-import Modal from '@material-ui/core/Modal';
 
 interface SigninProps extends RouteComponentProps<any> {
 
@@ -27,24 +26,10 @@ interface SigninState{
     password: string,
     redirect: boolean,
     failed: boolean,
-    errorMsg: string
+    errorMsg: string,
 }
 
 class Signin extends Component<SigninProps, SigninState> {
-
-    // componentDidMount() {
-    //     let signedIn = false;
-    //     firebase.auth().onAuthStateChanged(function(user) {
-    //         if (user) {
-    //             signedIn = true;
-    //         }
-    //     });
-    //
-    //     if(signedIn) {
-    //         this.setState({redirect: true});
-    //     }
-    //
-    // }
 
 
     constructor(props: SigninProps) {
@@ -61,9 +46,12 @@ class Signin extends Component<SigninProps, SigninState> {
 
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
             .then((userCredential) => {
-                // Signed in
-                var user = userCredential.user;
-                this.setState({redirect: true });
+
+                this.setState({redirect: true});
+
+                // if(userCredential.user) {
+                //     this.setState({user: userCredential?.user});
+                // }
 
             })
             .catch((error) => {
@@ -81,7 +69,6 @@ class Signin extends Component<SigninProps, SigninState> {
     handleEmailReset() {
 
     }
-
 
 
 

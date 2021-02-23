@@ -23,6 +23,7 @@ import Button from '@material-ui/core/Button';
 
 
 interface SettingsProps extends RouteComponentProps<any> {
+    // user: firebase.User;
 }
 
 
@@ -33,8 +34,8 @@ interface SettingsState{
     firstName: string,
     edit: boolean,
     success: boolean,
-    failure: boolean,
     errorMsg: string,
+    failure: boolean
 }
 
 interface TabPanelProps {
@@ -103,19 +104,14 @@ class Settings extends Component<SettingsProps, SettingsState> {
         let success = false;
         let failure = false;
 
-        userRef.update({
+        await userRef.update({
             firstName: this.state.firstName
-        }).then((res) => {
-            console.log(res);
+        }).then(() => {
             success = true;
-
         }).catch((err) => {
-            console.log(err);
+            console.log(err.code, err.message);
             failure = true;
-
             this.setState({errorMsg: err.message});
-
-
         });
 
 
@@ -124,23 +120,15 @@ class Settings extends Component<SettingsProps, SettingsState> {
         let scope = this;
 
         if (email != null) {
-            user?.updateEmail(email).then((res) => {
-                console.log(res);
-
-            }).catch(function (err) {
-                console.log(err);
+            user?.updateEmail(email).catch(function (err) {
+                console.log(err.code, err.message);
                 success = false;
-
                 scope.setState({errorMsg: err.message});
-
-
             });
         }
 
 
-        this.setState({success: success});
-        this.setState({failure: failure});
-
+        this.setState({success: success, failure: failure});
 
 
     }
@@ -148,9 +136,8 @@ class Settings extends Component<SettingsProps, SettingsState> {
 
     constructor(props: SettingsProps) {
         super(props);
-        this.state = {value: 0, index: 0, email: '', firstName: '', edit: false, failure: false, success: false, errorMsg: ''}
+        this.state = {value: 0, index: 0, email: '', firstName: '', edit: false, success: false, errorMsg: '', failure: false}
         this.handleChange = this.handleChange.bind(this);
-
         this.updateAccount = this.updateAccount.bind(this);
 
     }
@@ -269,13 +256,13 @@ class Settings extends Component<SettingsProps, SettingsState> {
                 </Container>
 
                 <div>
-                    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2500} transitionDuration={1000}>
                         <MuiAlert severity="success">
                             Account updated! 😃
                         </MuiAlert>
                     </Snackbar>
 
-                    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2500} transitionDuration={1000}>
                         <MuiAlert severity="warning">
                             Oops 🥴... something went wrong
 
