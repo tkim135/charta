@@ -51,7 +51,6 @@ class Home extends Component<HomeProps, HomeState>{
                     </Grid>
                     <Footer/>
 
-
                 </div>
 
 
