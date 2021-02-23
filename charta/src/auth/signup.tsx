@@ -99,9 +99,9 @@ class SignUp extends Component<SignUpProps, SignUpState> {
 
                     <img alt="Charta logo" src={"./Logo.png"}/>
                     <div>
-                        <h1>
+                        <Typography component="h1" variant="h5" align="center">
                             Sign up
-                        </h1>
+                        </Typography>
                     </div>
 
 
