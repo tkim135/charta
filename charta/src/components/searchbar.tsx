@@ -30,11 +30,6 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
     constructor(props: SearchBarProps) {
         super(props);
         this.state = {loading: false, open: true, suggestions: [], query: ''};
-
-        // this.setOpen = this.setOpen.bind(this);
-        // this.onInputChange = this.onInputChange.bind(this);
-
-        // this.onChange = this.onChange.bind(this);
     }
 
     setOpen(open: boolean) {
@@ -47,18 +42,12 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
 
         const coursesRef = await db.collection('classes');
 
-        var query = coursesRef.where('Codes', 'array-contains', value.toUpperCase()).get()
+        coursesRef.where('Codes', 'array-contains', value.toUpperCase()).get()
             .then(querySnapshot => {
                 if (querySnapshot.empty) {
                     console.log("nothing found");
 
                 } else {
-                    // for(Document doc in querySnapshot.docs) {
-                    //     // var doc = querySnapshot.docs[0];
-                    //     console.log('Document data:', doc.data());
-                    //
-                    // }
-
                     // clear suggestions array every time new query is entered
                     let suggestions : Course[] = [];
 
@@ -90,9 +79,6 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
 
     }
 
-    onChange() {
-
-    }
 
 
     render() {
