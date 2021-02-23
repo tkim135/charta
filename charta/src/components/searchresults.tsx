@@ -6,8 +6,6 @@ import '../firebase';
 import Course from "../data/course";
 import Header from "./header";
 import Footer from "./footer";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Card from '@material-ui/core/Card';
@@ -16,6 +14,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 interface SearchResultState {
     course: Course,
@@ -23,6 +22,57 @@ interface SearchResultState {
 }
 
 interface SearchResultProps {
+}
+
+interface CourseCardProps {
+    course: Course
+}
+
+
+class CourseCard extends Component<CourseCardProps>{
+
+    constructor(props: CourseCardProps) {
+        super(props);
+
+    }
+
+    render() {
+        let course = this.props.course;
+
+        return (
+            <Card>
+            <CardContent>
+                <h1>{course.title} ({course.codes})</h1>
+
+                <p>{course.description}</p>
+
+
+
+                Units: {course.minUnits === course.maxUnits ? <p>{course.maxUnits}</p> : <p>{course.minUnits}-{course.maxUnits}</p>}
+
+                GER: {course.GER.length == 0 ? <span/> : <Chip
+                color="primary"
+                label={course.GER}
+            />}
+
+                <br/>
+
+                {course.terms.map((term: string, i: number) => {
+                    return <Chip color="secondary" label={term} key={i}/>
+                }) }
+
+                <Chip label={course.gradingBasis}/>
+
+
+            </CardContent>
+
+            <CardActions>
+                <Button size="small">Find study groups</Button>
+                <Button size="small">Add to academic plan <AddCircleIcon/></Button>
+            </CardActions>
+        </Card>
+        );
+    }
 }
 
 class SearchResults extends Component<SearchResultProps & RouteComponentProps, SearchResultState> {
@@ -66,44 +116,20 @@ class SearchResults extends Component<SearchResultProps & RouteComponentProps, S
     }
 
     render() {
+
+        let course = this.state.course
         return (
             <div className="flex flex-col h-screen justify-between">
-                <Backdrop  open={this.state.loading}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
 
                 <Header/>
 
                 <Container>
                     <Grid container spacing={3}>
                         <Grid item>
-                            <Card>
-                                <CardContent>
-                                    <h1>{this.state.course.title} ({this.state.course.codes})</h1>
-
-                                    <p>{this.state.course.description}</p>
-
-
-                                  Units: {this.state.course.minUnits === this.state.course.maxUnits ? <p>{this.state.course.maxUnits}</p> : <p>{this.state.course.minUnits}-{this.state.course.maxUnits}</p>}
-
-
-                                    <Chip
-                                        color="primary"
-                                        label={this.state.course.GER}
-                                    />
-                                </CardContent>
-
-                                <CardActions>
-                                    <Button size="small">Find study groups</Button>
-                                    <Button size="small">Add to academic plan <AddCircleIcon/></Button>
-                                </CardActions>
-                            </Card>
-
+                            {this.state.loading ? <CircularProgress/> : <CourseCard course={course}/>}
 
                         </Grid>
-                        <Grid item>
 
-                        </Grid>
                     </Grid>
                 </Container>
 
