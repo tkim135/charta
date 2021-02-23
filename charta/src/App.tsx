@@ -15,6 +15,7 @@ import Home from './components/home';
 import Settings from './account/settings';
 import SearchResults from './components/searchresults';
 
+import {withRouter} from 'react-router-dom';
 
 class App extends Component {
 

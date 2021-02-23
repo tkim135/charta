@@ -31,10 +31,6 @@ interface CourseCardProps {
 
 class CourseCard extends Component<CourseCardProps>{
 
-    constructor(props: CourseCardProps) {
-        super(props);
-
-    }
 
     render() {
         let course = this.props.course;
@@ -46,14 +42,14 @@ class CourseCard extends Component<CourseCardProps>{
 
                 <p>{course.description}</p>
 
-
-
                 Units: {course.minUnits === course.maxUnits ? <p>{course.maxUnits}</p> : <p>{course.minUnits}-{course.maxUnits}</p>}
 
-                GER: {course.GER.length == 0 ? <span/> : <Chip
+                GER: {course.GER.length === 0 ? <span/> : <Chip
                 color="primary"
                 label={course.GER}
-            />}
+                />}
+
+
 
                 <br/>
 
@@ -82,37 +78,49 @@ class SearchResults extends Component<SearchResultProps & RouteComponentProps, S
         let course =  new Course("", [], "", [], "", 0, 0, [], "");
         this.state = {course: course, loading: true}
 
+        this.loadCourseData = this.loadCourseData.bind(this);
     }
 
-    componentDidMount() {
-        const courseId = (this.props.match.params as any).courseId;
+    async componentWillReceiveProps(nextProps: any) {
+        await this.loadCourseData();
+        console.log('url changes');
+    }
+
+
+    // this.props.match doesn't update when the url changes, but window.location.pathname does
+    async loadCourseData() {
+        // const courseId = (this.props.match.params as any).courseId;
+        let courseId = window.location.pathname.split("/").pop() as any;
         const db = firebase.firestore();
         const docRef = db.collection('classes').doc(courseId);
 
         docRef.get().then(querySnapshot => {
 
-                const courseElements : any = querySnapshot.data();
-                const course = new Course(
-                    courseId,
-                    courseElements["Codes"],
-                    courseElements["Description"],
-                    courseElements["GER"],
-                    courseElements["Grading Basis"],
-                    courseElements["Min Units"],
-                    courseElements["Max Units"],
-                    courseElements["Terms"],
-                    courseElements["Title"]
-                );
+            const courseElements : any = querySnapshot.data();
+            const course = new Course(
+                courseId,
+                courseElements["Codes"],
+                courseElements["Description"],
+                courseElements["GER"],
+                courseElements["Grading Basis"],
+                courseElements["Min Units"],
+                courseElements["Max Units"],
+                courseElements["Terms"],
+                courseElements["Title"]
+            );
 
-                this.setState({ course : course });
+            this.setState({ course : course });
 
-            })
+        })
             .catch((err) => {
-                console.log('Error getting document', err.code, err.message);
+                console.log('Error getting course', err);
             });
 
         this.setState({ loading : false });
+    }
 
+    async componentDidMount() {
+        await this.loadCourseData();
     }
 
     render() {

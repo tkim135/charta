@@ -88,6 +88,7 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                     id="search"
                     style={{ width: 600 }}
                     open={this.state.open}
+
                     onOpen={() => {
                         this.setOpen(true);
                     }}
