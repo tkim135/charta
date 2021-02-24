@@ -40,6 +40,14 @@ class Course {
                 return 1;
             }
 
+            // actually, so are winter and summer
+            if (n1.substring(10) === "Winter" && n2.substring(10) === "Summer") {
+                return -1;
+            }
+            if (n2.substring(10) === "Winter" && n1.substring(10) === "Summer") {
+                return 1;
+            }
+
             // alphabetical
             if (n1.substring(10) < n2.substring(10)) {
                 return -1;
