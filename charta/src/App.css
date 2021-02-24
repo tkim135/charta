@@ -58,46 +58,18 @@ h1{
   color: #6FCF97 !important;
 }
 
-
-
-
-.slogan {
-  font-size: 60px;
-  color: white;
-  font-weight: bold;
-  text-align: center;
-}
-
-.title {
-  margin-top: 20vh;
-  margin-bottom: 3vh;
+.intro {
   font-size: 30px;
+  margin-bottom: 3vh;
 }
 
-.text{
+.info{
   color: grey;
   font-size: 20px;
   margin-bottom: 3vh;
 }
 
-.left {
-  width: 40vw;
-  margin: 5vh 10vw;
-  display: inline-block;
-}
-
-.right {
-  display: inline-block;
-}
-
-.center {
-  display: flex;
-  justify-content: center;
-}
-
 .gradient {
-    background: linear-gradient(to bottom, #6fcf97 29%, #ffffff 83%);
-    min-height: 60vh;
-    margin: 0;
-    padding: 10vh 0vw;
+    background: linear-gradient(to bottom, #6fcf97 0%, #ffffff 100%);
+    min-height: 70vh;
 }

@@ -1,42 +1,27 @@
 
 import React, {Component} from 'react';
-import { Redirect } from 'react-router';
-import {Link } from 'react-router-dom';
-import Container from '@material-ui/core/Container';
+import {Redirect} from 'react-router';
+import {Link} from 'react-router-dom';
 import '../App.css';
-import Button from '@material-ui/core/Button';
-import Grid from "@material-ui/core/Grid";
-import Footer from "./footer";
+
 import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
 import Box from "@material-ui/core/Box";
-import IconButton from "@material-ui/core/IconButton";
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import Footer from "./footer";
+import Grid from "@material-ui/core/Grid";
+import Toolbar from "@material-ui/core/Toolbar";
 
-interface LandingState {
-    signUp: boolean,
-    signIn: boolean,
-}
-
-interface LandingProps {
-
-}
-
-
+interface LandingState {}
+interface LandingProps {}
 
 class Landing extends Component<LandingProps, LandingState>{
 
     constructor(props: LandingProps) {
         super(props);
-        this.state = {signUp: false, signIn: false}
     }
 
     render() {
-    	if(this.state.signUp) {
-    		return <Redirect to='/signup'/>;
-    	}
-    	if (this.state.signUp) {
-    		return <Redirect to='/signin'/>;
-    	}
 
     	return(
 
@@ -56,32 +41,24 @@ class Landing extends Component<LandingProps, LandingState>{
 					</AppBar>
 				</div>
 
-
-				<Grid container spacing={3}>
+				<Grid container spacing={8} direction="row" alignItems="center">
 					<Grid item xs={3}>
-
 						<div className="gradient">
-							<h1 className="slogan">Chart your path to graduation!</h1>
-							<div>
-								<div className="left">
-									<h4 className="title">Welcome to Charta</h4>
-									<p className="text">We know classes can be tough, and figuring out the right ones can be even tougher! That's why at Charta, we're working to take some of the stress out of planning your schedule. Charta is the perfect tool for students to organize their course plans, check their degree progress, and receive recommendations about the best courses suited for them. Give it a try!</p>
-									<Button color="primary"><Link to="/signin">Sign In</Link></Button>
-								</div>
-								<div className="right">
-									<img src={"./climb.png"} alt="Image Not Found" />
-								</div>
-							</div>
-							<img alt="Charta logo" src={"./images/logoCropped.png"}/>
 						</div>
-
+						<img alt="Charta logo" src={"./images/croppedLogo.png"}/>
 					</Grid>
-					<Grid item xs={9}>
-
+					<Grid item xs={4}>
+							<p className="intro">Welcome to Charta</p>
+							<p className="info">We know classes can be tough, and figuring out the right ones can be even tougher! That's why at Charta, we're working to take some of the stress out of planning your schedule.</p>
+							<p className="info">Charta is the perfect tool for students to organize their course plans, check their degree progress, and receive recommendations about the best courses suited for them.</p>
+							<Button color="primary"><Link to="/signin">Chart your path!</Link></Button>
+					</Grid>
+					
+					<Grid item xs={5}>
+						<img src={"./images/climb.png"} alt="Student Image"/>
 					</Grid>
 				</Grid>
 				<Footer/>
-
 			</div>
         );
     }

@@ -22,9 +22,8 @@ class App extends Component {
         return (
             <Router>
                 <Switch>
-                    <Route exact path="/" component={Landing}/>
                     <Route path="/home" component={Home}/>
-                    <Route path="/landing" component={Landing}/>
+                    <Route exact path="/" component={Landing}/>
                     <Route exact path="/signin" component={SignIn} />
                     <Route exact path="/signup" component={SignUp} />
                     <Route exact path="/settings" component={Settings} />
@@ -38,7 +37,3 @@ class App extends Component {
 
 
 export default App;
-
-
-
-
