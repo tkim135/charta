@@ -2,12 +2,9 @@ import React, {Component} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import firebase from "firebase/app";
 import "firebase/auth";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import TextField from '@material-ui/core/TextField';
 import {Link } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -20,7 +17,6 @@ interface HeaderProps {
 interface HeaderState {
     firstName: string
 }
-
 
 
 class Header extends Component<HeaderProps, HeaderState>{

@@ -14,7 +14,9 @@ import { BrowserRouter as Router, Switch, Route, Redirect} from "react-router-do
 import Home from './components/home';
 import Landing from './components/landing';
 import Settings from './account/settings';
+import SearchResults from './components/searchresults';
 
+import {withRouter} from 'react-router-dom';
 
 class App extends Component {
 
@@ -27,6 +29,7 @@ class App extends Component {
                     <Route exact path="/signin" component={SignIn} />
                     <Route exact path="/signup" component={SignUp} />
                     <Route exact path="/settings" component={Settings} />
+                    <Route path="/search/:courseId" component={SearchResults} />
                 </Switch>
 
             </Router>

@@ -8,6 +8,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import firebase from "firebase/app";
 import "firebase/auth";
 import Course from "../data/course";
+import { Link } from 'react-router-dom';
 
 
 interface SearchBarState {
@@ -28,39 +29,47 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
 
     constructor(props: SearchBarProps) {
         super(props);
-        this.state = {loading: false, open: false, suggestions: [], query: ''};
-
-        this.setOpen = this.setOpen.bind(this);
-        this.onInputChange = this.onInputChange.bind(this);
-
-        this.onChange = this.onChange.bind(this);
+        this.state = {loading: false, open: true, suggestions: [], query: ''};
     }
 
     setOpen(open: boolean) {
-
+        this.setState({open: open})
     }
 
     async onInputChange(event: object, value: string) {
 
         const db = firebase.firestore();
-        // const ref = db.collection("courses");
-        // const query  = ref.where("title", "array-contains", "value");
 
         const coursesRef = await db.collection('classes');
 
-        var query = coursesRef.where('title', 'array-contains', value).get()
+        coursesRef.where('Codes', 'array-contains', value.toUpperCase()).get()
             .then(querySnapshot => {
                 if (querySnapshot.empty) {
                     console.log("nothing found");
 
                 } else {
-                    // for(Document doc in querySnapshot.docs) {
-                    //     // var doc = querySnapshot.docs[0];
-                    //     console.log('Document data:', doc.data());
-                    //
-                    // }
-                    querySnapshot.docs.forEach(doc => console.log(doc.data()));
+                    // clear suggestions array every time new query is entered
+                    let suggestions : Course[] = [];
 
+                    querySnapshot.docs.forEach(doc => {
+                        console.log(doc.data());
+
+                        suggestions.push(new Course(
+                            doc.id,
+                            doc.data()["Codes"],
+                            doc.data()["Description"],
+                            doc.data()["GER"],
+                            doc.data()["Grading Basis"],
+                            doc.data()["Min Units"],
+                            doc.data()["Max Units"],
+                            doc.data()["Terms"],
+                            doc.data()["Title"]
+                        ));
+
+                    });
+
+                    this.setState({suggestions: suggestions, query: value})
+                    console.log(this.state);
                 }
             })
             .catch(err => {
@@ -70,9 +79,6 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
 
     }
 
-    onChange() {
-
-    }
 
 
     render() {
@@ -82,6 +88,7 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                     id="search"
                     style={{ width: 600 }}
                     open={this.state.open}
+
                     onOpen={() => {
                         this.setOpen(true);
                     }}
@@ -90,9 +97,19 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                     }}
                     options={this.state.suggestions}
                     getOptionSelected={(course, value) => course.title === value.title}
-                    getOptionLabel={(course) => course.title}
+                    getOptionLabel={(course) => this.state.query}
+                    renderOption={(course) => (
+                        <React.Fragment>
+                            <Link to={'/search/'+course.id}>
+                                <div>
+                                    <b>{course.codes.join(', ')}: <i>{course.title}</i></b><br />
+                                    {course.description}
+                                </div>
+                            </Link>
+                        </React.Fragment>
+                    )}
                     loading={this.state.loading}
-                    onInputChange={this.onInputChange}
+                    onInputChange={(event, value) => this.onInputChange(event, value)}
                     renderInput={(params) => (
                         <TextField
                             {...params}
