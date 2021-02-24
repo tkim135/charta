@@ -45,29 +45,35 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     // load the courses for this quarter
    async loadCourses(path: string) {
        const db = firebase.firestore();
+       console.log("loading course data");
 
-       // doc.data()?.["quarters"];
-
-       let courses: Array<UserCourse> = [];
+       // let courses: Array<UserCourse> = [];
        let totalUnits = 0;
+       let courses: Array<UserCourse> = [];
 
        // iterate over courses in this quarter
        db.collection(path).get().then( (querySnapshot) => {
+           console.log(path);
 
             // get the course
-           querySnapshot.forEach(async(doc) =>  {
+            querySnapshot.forEach((doc) =>  {
                // let course = await this.loadCourse(doc);
-               let course = doc.data();
-               console.log(course);
-               courses.push(new UserCourse(course?.code, course?.reason, course?.grade, course?.units, this.props.name, course?.title));
+               let courseData = doc.data();
+               if(courseData?.ignore) return
+               let course = new UserCourse(courseData?.code, courseData?.reason, courseData?.grade, courseData?.units, this.props.name, courseData?.title)
+               courses.push(course);
                totalUnits += course.units;
            })
 
+           this.setState({courses: courses});
+           this.setState({totalUnits: totalUnits});
 
+
+       }).catch((err) => {
+           console.log("error loading courses", err);
        });
 
-       this.setState({courses: courses});
-       this.setState({totalUnits: totalUnits});
+
 
 
    }
@@ -121,7 +127,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
 
 
-    //TODO: case when multple course ids
+    //TODO: case when mulitple course ids
     async findCourse() {
         const db = firebase.firestore();
         const coursesRef = await db.collection('classes');
@@ -139,6 +145,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                     let courseTitle = "";
 
                     querySnapshot.docs.forEach(doc => {
+                        console.log(doc.data());
                         courseIds.push(doc.id);
                         courseTitle = doc.data().Title;
                     });
@@ -159,6 +166,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
 
     // TODO: Check if course already in quarter
+    // TODO: Check if units are valid (i.e., not possible to take CS 229 for 10 units, even though it should be)
     async addCourse() {
 
         const db = firebase.firestore();
@@ -166,6 +174,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         let [courseId, courseTitle] = await this.findCourse();
 
         console.log(courseId);
+        console.log(courseTitle);
 
         if(courseId === "-1") {
             console.log("course not found");
@@ -176,8 +185,9 @@ class Quarter extends Component<QuarterProps, QuarterState> {
             db.collection(`users/${uid}/${this.props.name}`).doc(courseId).set({
                 "units": this.state.newUnits,
                 "grade": this.state.newGrade,
-                "reason": this.state.newReason
-
+                "reason": this.state.newReason,
+                "id": courseId,
+                "title": courseTitle
             }).then(() => {
                 console.log("added course");
                 this.setState({success: true});
@@ -215,8 +225,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                         <Table aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Course Number</TableCell>
-                                    <TableCell align="right">Title</TableCell>
+                                    <TableCell>Course</TableCell>
                                     <TableCell align="right">Units</TableCell>
                                     <TableCell align="right">Grade</TableCell>
                                     <TableCell align="right">Reason</TableCell>
@@ -227,10 +236,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 {this.state.courses.map((course, i) => (
 
                                     <TableRow key={i}>
-                                        <TableCell component="th" scope="row">
-                                            {course.code}
+                                        <TableCell component="th" scope="row">{course.code}
                                         </TableCell>
-                                        <TableCell align="right">{course.title}</TableCell>
                                         <TableCell align="right">{course.units}</TableCell>
                                         <TableCell align="right">{course.grade}</TableCell>
                                         <TableCell align="right">{course.reason}</TableCell>
@@ -249,6 +256,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                     <DialogContent>
                                         <TextField
                                             autoFocus
+                                            required
                                             margin="dense"
                                             id="name"
                                             label="Course Code (e.g., CS 194W)"
@@ -259,7 +267,9 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                         />
 
                                         <TextField
+                                            required
                                             autoFocus
+                                            error={this.state.newUnits < 0 || this.state.newUnits > 10}
                                             margin="dense"
                                             id="units"
                                             label="Units"
