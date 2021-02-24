@@ -27,7 +27,7 @@ interface QuarterState {
     open: boolean;
     onClick: React.MouseEventHandler<HTMLButtonElement>;
     courses: Array<UserCourse>;
-    newCourse: string;
+    newCode: string;
     newTitle: string;
     newUnits: number;
     newGrade: string;
@@ -104,7 +104,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         this.state = {open: false,
                    onClick: this.handleOpen,
                    courses: [],
-                 newCourse: '',
+                 newCode: '',
                   newTitle: '',
                   newGrade: '',
                   newUnits: 0,
@@ -127,7 +127,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
 
 
-    //TODO: case when mulitple course ids
+    //TODO: case when multiple course ids
     async findCourse() {
         const db = firebase.firestore();
         const coursesRef = await db.collection('classes');
@@ -135,7 +135,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         let courseId = "-1";
         let courseTitle = "";
 
-        await coursesRef.where('Codes', 'array-contains', this.state.newCourse.toUpperCase()).get()
+        await coursesRef.where('Codes', 'array-contains', this.state.newCode.toUpperCase()).get()
             .then(querySnapshot => {
                 if (querySnapshot.empty) {
                     console.log("nothing found");
@@ -178,6 +178,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
         if(courseId === "-1") {
             console.log("course not found");
+            this.setState({failure: true});
         }
 
         else{
@@ -187,12 +188,13 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                 "grade": this.state.newGrade,
                 "reason": this.state.newReason,
                 "id": courseId,
-                "title": courseTitle
+                "title": courseTitle,
+                "code": this.state.newCode
             }).then(() => {
                 console.log("added course");
                 this.setState({success: true});
 
-                let course = new UserCourse(this.state.newCourse, this.state.newReason, this.state.newGrade, this.state.newUnits, this.props.name, courseTitle)
+                let course = new UserCourse(this.state.newCode, this.state.newReason, this.state.newGrade, this.state.newUnits, this.props.name, courseTitle)
                 let courses = this.state.courses;
                 courses.push(course);
                 this.setState({courses: courses})
@@ -246,7 +248,6 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             </TableBody>
                             <TableRow>
                                 <TableCell>Total</TableCell>
-                                <TableCell align="right"> </TableCell>
                                 <TableCell align="right">{this.state.totalUnits}</TableCell>
                                 <TableCell align="right"> </TableCell>
                                 <TableCell align="right"><Button onClick={this.handleOpen}><AddCircleIcon/></Button></TableCell>
@@ -261,8 +262,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                             id="name"
                                             label="Course Code (e.g., CS 194W)"
                                             type="text"
-                                            value={this.state.newCourse}
-                                            onChange={(evt) => this.setState({newCourse: evt.target.value})}
+                                            value={this.state.newCode}
+                                            onChange={(evt) => this.setState({newCode: evt.target.value})}
                                             fullWidth
                                         />
 
