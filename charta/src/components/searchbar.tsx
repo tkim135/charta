@@ -36,13 +36,25 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
         this.setState({open: open})
     }
 
+    private convertCourseCodeFormat(value: string) {
+        // converting to "{Subject} {Number}" format
+        if (value.indexOf(' ') === -1) {
+            // if user does not enter space between subject and number
+            let numIndex = value.search(/\d/);
+            value = value.substr(0, numIndex) + ' ' + value.substr(numIndex);
+        }
+        return value;
+    }
+
     async onInputChange(event: object, value: string) {
 
         const db = firebase.firestore();
 
         const coursesRef = await db.collection('classes');
 
-        coursesRef.where('Codes', 'array-contains', value.toUpperCase()).get()
+        let courseCode = this.convertCourseCodeFormat(value);
+
+        coursesRef.where('Codes', 'array-contains', courseCode.toUpperCase()).get()
             .then(querySnapshot => {
                 if (querySnapshot.empty) {
                     console.log("nothing found");
