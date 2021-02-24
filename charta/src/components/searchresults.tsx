@@ -38,16 +38,15 @@ class CourseCard extends Component<CourseCardProps>{
         return (
             <Card>
             <CardContent>
-                <h1>{course.title} ({course.codes})</h1>
+                <h1>{course.title} ({course.codes.join(', ')})</h1>
 
                 <p>{course.description}</p>
 
                 Units: {course.minUnits === course.maxUnits ? <p>{course.maxUnits}</p> : <p>{course.minUnits}-{course.maxUnits}</p>}
 
-                GER: {course.GER.length === 0 ? <span/> : <Chip
-                color="primary"
-                label={course.GER}
-                />}
+                GER: {course.GER.length === 0 ? <span/> : course.GER.map((GER: string, i: number) => {
+                    return <Chip color="primary" label={GER} key={i}/>
+                }) }
 
 
 
@@ -111,12 +110,13 @@ class SearchResults extends Component<SearchResultProps & RouteComponentProps, S
 
             this.setState({ course : course });
 
+            this.setState({ loading : false });
+
         })
             .catch((err) => {
                 console.log('Error getting course', err);
             });
 
-        this.setState({ loading : false });
     }
 
     async componentDidMount() {
@@ -125,14 +125,14 @@ class SearchResults extends Component<SearchResultProps & RouteComponentProps, S
 
     render() {
 
-        let course = this.state.course
+        let course = this.state.course;
         return (
             <div className="flex flex-col h-screen justify-between">
 
                 <Header/>
 
                 <Container>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={3} justify='center'>
                         <Grid item>
                             {this.state.loading ? <CircularProgress/> : <CourseCard course={course}/>}
 

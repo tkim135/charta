@@ -133,8 +133,8 @@ class Planner extends Component<PlannerProps, PlannerState> {
                     <CircularProgress color="inherit" />
                 </Backdrop>
 
-
-                <Grid container spacing={3}>
+                {/*Align "Planned Schedule" and "Add Quarter" vertically */}
+                <Grid container spacing={3} alignItems='center'>
                     <Grid item>
                         <h1>Planned Schedule</h1>
 
