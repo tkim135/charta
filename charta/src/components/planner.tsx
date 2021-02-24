@@ -22,7 +22,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
+import Course from '../data/course';
 
 interface PlannerState {
     loading: boolean;
@@ -44,6 +44,42 @@ interface PlannerProps {
 class Planner extends Component<PlannerProps, PlannerState> {
 
 
+
+    // TODO: fix duplicated code
+    sortTerms(terms: Array<string>) {
+        let sortedArray: string[] = terms.sort((n1,n2) => {
+            if (n1.substring(0,9) > n2.substring(0,9)) {
+                return 1;
+            }
+
+            if (n1.substring(0,9) < n2.substring(0,9)) {
+                return -1;
+            }
+            // if years are equal, compare "Autumn", "Winter", or "Spring"
+            // winter and spring are exceptions to alphabetical rule
+            // otherwise, alphabetical comparisons work
+            if (n1.substring(10) === "Winter" && n2.substring(10) === "Spring") {
+                return -1;
+            }
+            if (n2.substring(10) === "Winter" && n1.substring(10) === "Spring") {
+                return 1;
+            }
+
+            // alphabetical
+            if (n1.substring(10) < n2.substring(10)) {
+                return -1;
+            }
+
+            if (n1.substring(10) > n2.substring(10)) {
+                return 1;
+            }
+
+            return 0;
+        });
+        return sortedArray;
+    }
+
+
     async componentDidMount() {
         const db = firebase.firestore();
         let user = firebase.auth().currentUser;
@@ -61,6 +97,8 @@ class Planner extends Component<PlannerProps, PlannerState> {
             this.setState({firstName: doc.data()?.firstName});
 
             if(quarters) {
+                quarters = this.sortTerms(quarters);
+
                 this.setState({quarters: quarters});
             }
 
@@ -82,11 +120,16 @@ class Planner extends Component<PlannerProps, PlannerState> {
         super(props);
         this.state = {loading: true, quarters: [], empty: false, open: false, success: false, term: "", year: 2021, failure: false, welcome: false, firstName: ""};
         this.addQuarter = this.addQuarter.bind(this);
+        this.sortTerms = this.sortTerms.bind(this);
 
 
     }
 
     async addQuarter() {
+
+        if(!this.state.term) return;
+
+
         this.setState({open: false});
 
         let uid = firebase.auth().currentUser?.uid;
@@ -105,7 +148,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
             quarters: quarters
         });
 
-        db.collection(`users/${uid}/${quarter}`).doc("test").set({
+        db.collection(`users/${uid}/${quarter}`).doc("ignore").set({
             ignore: "true"
         }).then((res) => {
             console.log(res);
@@ -172,14 +215,14 @@ class Planner extends Component<PlannerProps, PlannerState> {
                     <DialogTitle><h1 className="text-center">Add quarter</h1></DialogTitle>
                     <DialogContent>
 
-                        <FormControl component="fieldset">
+                        <FormControl component="fieldset" required={true}>
                             <FormLabel component="legend">Term</FormLabel>
-                            <RadioGroup aria-label="term" name="term" value={this.state.term} onChange={(evt) => this.setState({term: evt.target.value})}
+                            <RadioGroup aria-label="term"  name="term" value={this.state.term} onChange={(evt) => this.setState({term: evt.target.value})}
                             >
-                                <FormControlLabel value="Fall" control={<Radio color="secondary"/>} label="Fall" />
+                                <FormControlLabel value="Fall" control={<Radio/>} label="Fall" />
                                 <FormControlLabel value="Winter" control={<Radio />} label="Winter" />
-                                <FormControlLabel value="Spring" control={<Radio />} label="Spring" />
-                                <FormControlLabel value="Summer" control={<Radio />} label="Summer" />
+                                <FormControlLabel value="Spring" control={<Radio/>} label="Spring" />
+                                <FormControlLabel value="Summer" control={<Radio/>} label="Summer" />
                             </RadioGroup>
                         </FormControl>
                         <TextField
@@ -188,7 +231,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                             label="year"
                             type="number"
                             value={this.state.year}
-
+                            required
                             onChange={(evt) => this.setState({year: parseInt(evt.target.value)})}
                             fullWidth
                         />
@@ -235,6 +278,22 @@ class Planner extends Component<PlannerProps, PlannerState> {
                         </MuiAlert>
                     </Snackbar>
                 </div>
+
+
+
+                {/*<div>*/}
+                {/*    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>*/}
+                {/*        <MuiAlert severity="success">*/}
+                {/*            Quarter added! 😃*/}
+                {/*        </MuiAlert>*/}
+                {/*    </Snackbar>*/}
+
+                {/*    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>*/}
+                {/*        <MuiAlert severity="warning">*/}
+                {/*            Oops 🥴... something went wrong*/}
+                {/*        </MuiAlert>*/}
+                {/*    </Snackbar>*/}
+                {/*</div>*/}
 
             </Container>
             </MuiThemeProvider>
