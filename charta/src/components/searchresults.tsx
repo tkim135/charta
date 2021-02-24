@@ -42,13 +42,13 @@ class CourseCard extends Component<CourseCardProps>{
 
                 <p>{course.description}</p>
 
-                Units: {course.minUnits === course.maxUnits ? <p>{course.maxUnits}</p> : <p>{course.minUnits}-{course.maxUnits}</p>}
+                Units: {course.minUnits === course.maxUnits ? <span>{course.maxUnits}</span> : <span>{course.minUnits}-{course.maxUnits}</span>}
 
-                GER: {course.GER.length === 0 ? <span/> : course.GER.map((GER: string, i: number) => {
+                <br/>
+
+                GER: {course.GER[0] ? course.GER.map((GER: string, i: number) => {
                     return <Chip color="primary" label={GER} key={i}/>
-                }) }
-
-
+                }) : <span>None</span> }
 
                 <br/>
 
@@ -62,12 +62,15 @@ class CourseCard extends Component<CourseCardProps>{
             </CardContent>
 
             <CardActions>
-                <Button size="small">Find study groups</Button>
-                <Button size="small">Add to academic plan <AddCircleIcon/></Button>
+                    <Button size="small">Find study groups</Button>
+                    <Button size="small">Add to academic plan <AddCircleIcon/></Button>
+                    <Button size="small">Find similar classes</Button>
             </CardActions>
         </Card>
         );
     }
+
+
 }
 
 class SearchResults extends Component<SearchResultProps & RouteComponentProps, SearchResultState> {

@@ -20,17 +20,21 @@ import firebase from "firebase";
 import 'firebase/firestore'
 import '../firebase';
 import UserCourse from '../data/usercourse';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 interface QuarterState {
     open: boolean;
     onClick: React.MouseEventHandler<HTMLButtonElement>;
-    courses: Array<any>;
+    courses: Array<UserCourse>;
     newCourse: string;
     newTitle: string;
     newUnits: number;
     newGrade: string;
     newReason: string;
     totalUnits: number;
+    success: boolean;
+    failure: boolean
 }
 interface QuarterProps {
     name: string
@@ -100,6 +104,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                   newUnits: 0,
                  newReason: '',
                 totalUnits: 0,
+                  success: false,
+                 failure: false
                     };
 
     }
@@ -113,24 +119,85 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         this.setState({open: false});
     }
 
+
+
+    //TODO: case when multple course ids
+    async findCourse() {
+        const db = firebase.firestore();
+        const coursesRef = await db.collection('classes');
+
+        let courseId = "-1";
+        let courseTitle = "";
+
+        await coursesRef.where('Codes', 'array-contains', this.state.newCourse.toUpperCase()).get()
+            .then(querySnapshot => {
+                if (querySnapshot.empty) {
+                    console.log("nothing found");
+
+                } else {
+                    let courseIds: Array<string> = [];
+                    let courseTitle = "";
+
+                    querySnapshot.docs.forEach(doc => {
+                        courseIds.push(doc.id);
+                        courseTitle = doc.data().Title;
+                    });
+
+                    if(courseIds.length != 0) {
+                        courseId = courseIds[0];
+
+                    }
+                }
+            })
+            .catch(err => {
+                console.log('Error getting document', err);
+            });
+
+        return [courseId, courseTitle];
+    }
+
+
+
+    // TODO: Check if course already in quarter
     async addCourse() {
-        // this.state.courses.push(new UserCourse(this.state.newCourse, this.state.newTitle, this.state.newUnits, this.state.newGrade, this.state.newReason));
 
         const db = firebase.firestore();
-        let user = firebase.auth().currentUser;
-        const userRef = db.collection('users').doc(user?.uid);
-        const doc = await userRef.get();
+        let uid = firebase.auth().currentUser?.uid;
+        let [courseId, courseTitle] = await this.findCourse();
 
-        // const userRef = db.collection('users').doc('ruben1');
-        // const doc = await userRef.get();
-        //
-        //  .doc('LA').set({
-        //     name: 'Los Angeles', state: 'CA', country: 'USA',
-        //     capital: false, population: 3900000
-        // });
+        console.log(courseId);
+
+        if(courseId === "-1") {
+            console.log("course not found");
+        }
+
+        else{
+
+            db.collection(`users/${uid}/${this.props.name}`).doc(courseId).set({
+                "units": this.state.newUnits,
+                "grade": this.state.newGrade,
+                "reason": this.state.newReason
+
+            }).then(() => {
+                console.log("added course");
+                this.setState({success: true});
+
+                let course = new UserCourse(this.state.newCourse, this.state.newReason, this.state.newGrade, this.state.newUnits, this.props.name, courseTitle)
+                let courses = this.state.courses;
+                courses.push(course);
+                this.setState({courses: courses})
+            }).catch((error) => {
+                console.log(error.code, error.message);
+                this.setState({failure: true});
+            });
+        }
+
+
 
         this.handleClose();
-    }
+
+   }
+
 
 
 
@@ -156,8 +223,10 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {this.state.courses.map((course) => (
-                                    <TableRow key={course.number}>
+
+                                {this.state.courses.map((course, i) => (
+
+                                    <TableRow key={i}>
                                         <TableCell component="th" scope="row">
                                             {course.code}
                                         </TableCell>
@@ -178,15 +247,11 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 <Dialog open={this.state.open}>
                                     <DialogTitle>Add a course</DialogTitle>
                                     <DialogContent>
-                                        {/*<DialogContentText>*/}
-                                        {/*    To subscribe to this website, please enter your email address here. We will send updates*/}
-                                        {/*    occasionally.*/}
-                                        {/*</DialogContentText>*/}
                                         <TextField
                                             autoFocus
                                             margin="dense"
                                             id="name"
-                                            label="course"
+                                            label="Course Code (e.g., CS 194W)"
                                             type="text"
                                             value={this.state.newCourse}
                                             onChange={(evt) => this.setState({newCourse: evt.target.value})}
@@ -196,18 +261,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                         <TextField
                                             autoFocus
                                             margin="dense"
-                                            id="title"
-                                            label="title"
-                                            type="text"
-                                            onChange={(evt) => this.setState({newTitle: evt.target.value})}
-                                            fullWidth
-                                        />
-
-                                        <TextField
-                                            autoFocus
-                                            margin="dense"
                                             id="units"
-                                            label="units"
+                                            label="Units"
                                             type="number"
                                             onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
                                             fullWidth
@@ -217,7 +272,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                             autoFocus
                                             margin="dense"
                                             id="grade"
-                                            label="grade"
+                                            label="Grade"
                                             type="text"
                                             onChange={(evt) => this.setState({newGrade: evt.target.value})}
                                             fullWidth
@@ -228,7 +283,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                             autoFocus
                                             margin="dense"
                                             id="reason"
-                                            label="reason"
+                                            label="Reason"
                                             type="text"
                                             onChange={(evt) => this.setState({newReason: evt.target.value})}
                                             fullWidth
@@ -251,6 +306,21 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
                     </TableContainer>
                 </AccordionDetails>
+
+                <div>
+                    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>
+                        <MuiAlert severity="success">
+                            Class added! 😃
+                        </MuiAlert>
+                    </Snackbar>
+
+                    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>
+                        <MuiAlert severity="warning">
+                            Oops 🥴... something went wrong
+                        </MuiAlert>
+                    </Snackbar>
+                </div>
+
 
             </Accordion>
 

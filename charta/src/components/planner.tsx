@@ -87,6 +87,10 @@ class Planner extends Component<PlannerProps, PlannerState> {
     }
 
     async addQuarter() {
+
+        if(!this.state.term) return;
+
+
         this.setState({open: false});
 
         let uid = firebase.auth().currentUser?.uid;
@@ -172,14 +176,14 @@ class Planner extends Component<PlannerProps, PlannerState> {
                     <DialogTitle><h1 className="text-center">Add quarter</h1></DialogTitle>
                     <DialogContent>
 
-                        <FormControl component="fieldset">
+                        <FormControl component="fieldset" required={true}>
                             <FormLabel component="legend">Term</FormLabel>
-                            <RadioGroup aria-label="term" name="term" value={this.state.term} onChange={(evt) => this.setState({term: evt.target.value})}
+                            <RadioGroup aria-label="term"  name="term" value={this.state.term} onChange={(evt) => this.setState({term: evt.target.value})}
                             >
-                                <FormControlLabel value="Fall" control={<Radio color="secondary"/>} label="Fall" />
+                                <FormControlLabel value="Fall" control={<Radio/>} label="Fall" />
                                 <FormControlLabel value="Winter" control={<Radio />} label="Winter" />
-                                <FormControlLabel value="Spring" control={<Radio />} label="Spring" />
-                                <FormControlLabel value="Summer" control={<Radio />} label="Summer" />
+                                <FormControlLabel value="Spring" control={<Radio/>} label="Spring" />
+                                <FormControlLabel value="Summer" control={<Radio/>} label="Summer" />
                             </RadioGroup>
                         </FormControl>
                         <TextField
@@ -188,7 +192,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                             label="year"
                             type="number"
                             value={this.state.year}
-
+                            required
                             onChange={(evt) => this.setState({year: parseInt(evt.target.value)})}
                             fullWidth
                         />
@@ -235,6 +239,22 @@ class Planner extends Component<PlannerProps, PlannerState> {
                         </MuiAlert>
                     </Snackbar>
                 </div>
+
+
+
+                {/*<div>*/}
+                {/*    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>*/}
+                {/*        <MuiAlert severity="success">*/}
+                {/*            Quarter added! 😃*/}
+                {/*        </MuiAlert>*/}
+                {/*    </Snackbar>*/}
+
+                {/*    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>*/}
+                {/*        <MuiAlert severity="warning">*/}
+                {/*            Oops 🥴... something went wrong*/}
+                {/*        </MuiAlert>*/}
+                {/*    </Snackbar>*/}
+                {/*</div>*/}
 
             </Container>
             </MuiThemeProvider>
