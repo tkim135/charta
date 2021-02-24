@@ -2,6 +2,7 @@ import {Component} from "react";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 
 
 
@@ -29,14 +30,14 @@ class Recommendation extends Component<RecommendationProps , RecommendationState
 
     render() {
         return (
-            <div>
+            <Container>
                 <Card>
                    <CardContent>
 
                        <Button>Generate recommendations</Button>
                    </CardContent>
                 </Card>
-            </div>
+            </Container>
         )
 
     }

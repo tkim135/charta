@@ -22,7 +22,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import Course from '../data/course';
+import Typography from "@material-ui/core/Typography";
 
 interface PlannerState {
     loading: boolean;
@@ -150,6 +150,9 @@ class Planner extends Component<PlannerProps, PlannerState> {
         let quarters = this.state.quarters;
         quarters.push(quarter);
 
+        quarters = this.sortTerms(quarters);
+
+
         this.setState({quarters: quarters});
 
         await userRef.update({
@@ -179,7 +182,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
         return(
             <MuiThemeProvider theme={theme}>
 
-            <Container>
+            <Container maxWidth="xl" >
                 <Backdrop  open={this.state.loading}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
@@ -187,8 +190,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 {/*Align "Planned Schedule" and "Add Quarter" vertically */}
                 <Grid container spacing={3} alignItems='center'>
                     <Grid item>
-                        <h1>Planned Schedule</h1>
-
+                        <Typography component="h1" variant="h5" align="center">Planned Schedule</Typography>
                     </Grid>
                     <Grid item>
                         <Button onClick={() => this.setState({open: true})} >Add quarter<AddCircleIcon/></Button>
@@ -214,7 +216,8 @@ class Planner extends Component<PlannerProps, PlannerState> {
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
                             if(i % 3 === 2){return <Quarter name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
-                        }) : ''}                    </Grid>
+                        }) : ''}
+                    </Grid>
 
                 </Grid>
 
