@@ -198,6 +198,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                 let courses = this.state.courses;
                 courses.push(course);
                 this.setState({courses: courses})
+                let newTotalUnits = this.state.totalUnits + this.state.newUnits;
+                this.setState({totalUnits: newTotalUnits});
             }).catch((error) => {
                 console.log(error.code, error.message);
                 this.setState({failure: true});
