@@ -8,7 +8,6 @@
 }
 
 
-
 .App-header {
   background-color: #6FCF97;
   min-height: 100vh;
@@ -57,4 +56,20 @@ h1{
   background-color: white !important;
   outline-color: #6FCF97 !important;
   color: #6FCF97 !important;
+}
+
+.intro {
+  font-size: 30px;
+  margin-bottom: 3vh;
+}
+
+.info{
+  color: grey;
+  font-size: 20px;
+  margin-bottom: 3vh;
+}
+
+.gradient {
+    background: linear-gradient(to bottom, #6fcf97 0%, #ffffff 100%);
+    min-height: 70vh;
 }
