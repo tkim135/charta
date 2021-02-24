@@ -12,8 +12,11 @@ import NotFound from './components/notfound'
 import { BrowserRouter as Router, Switch, Route, Redirect} from "react-router-dom";
 // @ts-ignore
 import Home from './components/home';
+import Landing from './components/landing';
 import Settings from './account/settings';
+import SearchResults from './components/searchresults';
 
+import {withRouter} from 'react-router-dom';
 
 class App extends Component {
 
@@ -22,10 +25,11 @@ class App extends Component {
             <Router>
                 <Switch>
                     <Route path="/home" component={Home}/>
+                    <Route exact path="/" component={Landing}/>
                     <Route exact path="/signin" component={SignIn} />
                     <Route exact path="/signup" component={SignUp} />
                     <Route exact path="/settings" component={Settings} />
-                    <Redirect to="/home" />
+                    <Route path="/search/:courseId" component={SearchResults} />
                 </Switch>
 
             </Router>
@@ -36,7 +40,3 @@ class App extends Component {
 
 
 export default App;
-
-
-
-

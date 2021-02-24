@@ -2,12 +2,9 @@ import React, {Component} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import firebase from "firebase/app";
 import "firebase/auth";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import TextField from '@material-ui/core/TextField';
 import {Link } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -18,23 +15,33 @@ interface HeaderProps {
 }
 
 interface HeaderState {
-    displayName: string
+    firstName: string
 }
-
 
 
 class Header extends Component<HeaderProps, HeaderState>{
 
-    componentDidMount() {
-        let displayName = firebase.auth().currentUser?.displayName;
-        if(displayName) this.setState({displayName: displayName});
+    async componentDidMount() {
+
+        const db = firebase.firestore();
+        let user = firebase.auth().currentUser;
+        const userRef = db.collection('users').doc(user?.uid);
+        const doc = await userRef.get();
+
+        if (!doc.exists) {
+            console.log('No such user!');
+
+        } else {
+            this.setState({firstName: doc.data()?.firstName});
+        }
+
     }
 
 
     constructor(props: HeaderProps) {
         super(props);
         this.handleSignout = this.handleSignout.bind(this);
-        this.state = {displayName: ""};
+        this.state = {firstName: ""};
     }
 
     handleSignout() {
@@ -59,9 +66,10 @@ class Header extends Component<HeaderProps, HeaderState>{
                     <SearchBar/>
 
                 </Box>
-                <Link to={"settings"}><Button startIcon={<SettingsIcon style={{ color: grey[50] }}/>}/></Link>
-                {this.state.displayName ?  <h1>Welcome, {this.state.displayName}</h1> : <h1></h1>}
+                {this.state.firstName ?  <h1>Welcome, {this.state.firstName}</h1> : <h1></h1>}
+
                 <Button color="inherit" onClick={this.handleSignout}><Link to="/signin">Sign out</Link></Button>
+                <Link to={"settings"}><Button startIcon={<SettingsIcon style={{ color: grey[50] }}/>}/></Link>
 
             </Toolbar>
               

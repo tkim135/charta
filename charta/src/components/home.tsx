@@ -8,6 +8,7 @@ import Footer from './footer';
 // import ClassCard from './card';
 // @ts-ignore
 import Planner from './planner';
+// @ts-ignore
 import Recommendation from './recommendation';
 import firebase from "firebase";
 import {Redirect} from "react-router";
@@ -49,7 +50,6 @@ class Home extends Component<HomeProps, HomeState>{
                         </Grid>
                     </Grid>
                     <Footer/>
-
 
                 </div>
 

@@ -138,7 +138,11 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
         return (
             <Accordion>
-                <AccordionSummary className="quarter-summary"><h1 id="quarter-title"><strong>{this.props.name}</strong></h1></AccordionSummary>
+                <AccordionSummary className="quarter-summary">
+                    <div className="">
+                        <h1 id="quarter-title"><strong>{this.props.name}</strong></h1>
+                    </div>
+                </AccordionSummary>
                 <AccordionDetails>
                     <TableContainer >
                         <Table aria-label="simple table">
@@ -231,7 +235,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                         />
                                     </DialogContent>
                                     <DialogActions>
-                                        <Button onClick={this.handleClose} color="primary">
+                                        <Button onClick={this.handleClose} color="primary" className="cancelButton">
                                             Cancel
                                         </Button>
 
