@@ -34,8 +34,8 @@ class Landing extends Component<LandingProps, LandingState>{
 								<Button><h1 id="title"><Link to="/">Charta</Link> </h1></Button>
 							</Box>
 
-							<Button><h1 id="title"><Link to="/home">Sign in</Link> </h1></Button>
-							<Button><h1 id="title"><Link to="/home">Sign up</Link> </h1></Button>
+							<Button><h1 id="title"><Link to="/signin">Sign in</Link> </h1></Button>
+							<Button><h1 id="title"><Link to="/signup">Sign up</Link> </h1></Button>
 						</Toolbar>
 
 					</AppBar>
