@@ -47,6 +47,7 @@ class Header extends Component<HeaderProps, HeaderState>{
 
     handleSignout() {
         firebase.auth().signOut().then(() => {
+            localStorage.removeItem('user');
             console.log('sign out successful');
         }).catch((error) => {
             console.log(error.code, error.message);

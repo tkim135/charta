@@ -52,6 +52,7 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                 // Signed in
                 let user = userCredential.user;
                 const db = firebase.firestore();
+                localStorage.setItem('user', userCredential?.toString())
 
                 await db.collection('users').doc(user?.uid).set({"firstName": this.state.firstName, "quarters": []});
 
