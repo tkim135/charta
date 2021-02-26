@@ -47,11 +47,8 @@ class Signin extends Component<SigninProps, SigninState> {
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
             .then((userCredential) => {
 
+                localStorage.setItem('user', userCredential?.toString())
                 this.setState({redirect: true});
-
-                // if(userCredential.user) {
-                //     this.setState({user: userCredential?.user});
-                // }
 
             })
             .catch((error) => {
