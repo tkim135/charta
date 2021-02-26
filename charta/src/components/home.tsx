@@ -53,19 +53,19 @@ class Home extends Component<HomeProps, HomeState>{
             return (
                 <div className="flex flex-col h-screen justify-between">
                     <Header/>
-
-
+                    {/*<Recommendation/>*/}
                     {/*<Planner/>*/}
-                    <Grid container spacing={3}>
-                        <Grid item xs={3}>
+
+                    <Grid container>
+                        <Grid item xs={3} md={3}>
                             <Recommendation/>
 
                         </Grid>
-                        <Grid item xs={9}>
+                        <Grid item xs={9} md={9}>
                             <Planner/>
-
                         </Grid>
                     </Grid>
+
                     <Footer/>
 
                 </div>

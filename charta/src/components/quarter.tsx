@@ -22,9 +22,10 @@ import '../firebase';
 import UserCourse from '../data/usercourse';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 interface QuarterState {
-    open: boolean;
+    addCourse: boolean;
     onClick: React.MouseEventHandler<HTMLButtonElement>;
     courses: Array<UserCourse>;
     newCode: string;
@@ -34,11 +35,15 @@ interface QuarterState {
     newReason: string;
     totalUnits: number;
     success: boolean;
-    failure: boolean
+    failure: boolean;
+    shouldDeleteQuarter: boolean
 }
 interface QuarterProps {
-    name: string
+    name: string,
+    deleteQuarter: (quarter: string) => void;
 }
+
+
 class Quarter extends Component<QuarterProps, QuarterState> {
 
 
@@ -98,10 +103,11 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.addCourse = this.addCourse.bind(this);
+        this.handleAddCourse = this.handleAddCourse.bind(this);
+        this.handleDeleteQuarter = this.handleDeleteQuarter.bind(this);
         this.loadCourses = this.loadCourses.bind(this);
 
-        this.state = {open: false,
+        this.state = {addCourse: false,
                    onClick: this.handleOpen,
                    courses: [],
                  newCode: '',
@@ -111,24 +117,24 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                  newReason: '',
                 totalUnits: 0,
                   success: false,
-                 failure: false
+                 failure: false,
+                 shouldDeleteQuarter: false
                     };
 
     }
 
 
     handleOpen() {
-        this.setState({open: true});
+        this.setState({addCourse: true});
     }
 
     handleClose() {
-        this.setState({open: false});
+        this.setState({addCourse: false});
     }
 
 
-
     //TODO: case when multiple course ids
-    async findCourse() {
+    async handleAddCourse() {
         const db = firebase.firestore();
         const coursesRef = await db.collection('classes');
 
@@ -171,10 +177,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
         const db = firebase.firestore();
         let uid = firebase.auth().currentUser?.uid;
-        let [courseId, courseTitle] = await this.findCourse();
-
-        console.log(courseId);
-        console.log(courseTitle);
+        let [courseId, courseTitle] = await this.handleAddCourse();
 
         if(courseId === "-1") {
             console.log("course not found");
@@ -212,6 +215,11 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
    }
 
+   handleDeleteQuarter() {
+       this.setState({shouldDeleteQuarter: false});
+       this.props.deleteQuarter(this.props.name);
+   }
+
 
 
 
@@ -220,7 +228,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         return (
             <Accordion>
                 <AccordionSummary className="quarter-summary">
-                    <div className="">
+                    <div>
                         <h1 id="quarter-title"><strong>{this.props.name}</strong></h1>
                     </div>
                 </AccordionSummary>
@@ -240,8 +248,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 {this.state.courses.map((course, i) => (
 
                                     <TableRow key={i}>
-                                        <TableCell component="th" scope="row">{course.code}
-                                        </TableCell>
+                                        <TableCell component="th" scope="row">{course.code}</TableCell>
                                         <TableCell align="right">{course.units}</TableCell>
                                         <TableCell align="right">{course.grade}</TableCell>
                                         <TableCell align="right">{course.reason}</TableCell>
@@ -252,72 +259,15 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 <TableCell>Total</TableCell>
                                 <TableCell align="right">{this.state.totalUnits}</TableCell>
                                 <TableCell align="right"> </TableCell>
-                                <TableCell align="right"><Button onClick={this.handleOpen}><AddCircleIcon/></Button></TableCell>
-
-                                <Dialog open={this.state.open}>
-                                    <DialogTitle>Add a course</DialogTitle>
-                                    <DialogContent>
-                                        <TextField
-                                            autoFocus
-                                            required
-                                            margin="dense"
-                                            id="name"
-                                            label="Course Code (e.g., CS 194W)"
-                                            type="text"
-                                            value={this.state.newCode}
-                                            onChange={(evt) => this.setState({newCode: evt.target.value})}
-                                            fullWidth
-                                        />
-
-                                        <TextField
-                                            required
-                                            autoFocus
-                                            error={this.state.newUnits < 0 || this.state.newUnits > 10}
-                                            margin="dense"
-                                            id="units"
-                                            label="Units"
-                                            type="number"
-                                            onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
-                                            fullWidth
-                                        />
-
-                                        <TextField
-                                            autoFocus
-                                            margin="dense"
-                                            id="grade"
-                                            label="Grade"
-                                            type="text"
-                                            onChange={(evt) => this.setState({newGrade: evt.target.value})}
-                                            fullWidth
-                                        />
-
-
-                                        <TextField
-                                            autoFocus
-                                            margin="dense"
-                                            id="reason"
-                                            label="Reason"
-                                            type="text"
-                                            onChange={(evt) => this.setState({newReason: evt.target.value})}
-                                            fullWidth
-                                        />
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={this.handleClose} color="primary" className="cancelButton">
-                                            Cancel
-                                        </Button>
-
-                                        <Button onClick={this.addCourse} color="primary">
-                                            Add
-                                        </Button>
-                                    </DialogActions>
-
-                                </Dialog>
-
+                                <TableCell align="right"> </TableCell>
                             </TableRow>
+
                         </Table>
+                        <Button onClick={this.handleOpen}><AddCircleIcon/></Button>
+                        <Button onClick={()=> this.setState({shouldDeleteQuarter: true})}><HighlightOffIcon/></Button>
 
                     </TableContainer>
+
                 </AccordionDetails>
 
                 <div>
@@ -333,6 +283,86 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                         </MuiAlert>
                     </Snackbar>
                 </div>
+
+                <div>
+                    <Dialog open={this.state.shouldDeleteQuarter}>
+                        <DialogTitle>Delete quarter?</DialogTitle>
+                        <DialogContent>
+                            This can't be undone. 🥶
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => this.setState({shouldDeleteQuarter: false})} color="primary" className="cancelButton">
+                                Cancel
+                            </Button>
+
+                            <Button onClick={this.handleDeleteQuarter} color="primary">
+                                Confirm
+                            </Button>
+                        </DialogActions>
+
+                    </Dialog>
+
+                </div>
+
+                <Dialog open={this.state.addCourse}>
+                    <DialogTitle>Add a course</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            autoFocus
+                            required
+                            margin="dense"
+                            id="name"
+                            label="Course Code (e.g., CS 194W)"
+                            type="text"
+                            value={this.state.newCode}
+                            onChange={(evt) => this.setState({newCode: evt.target.value})}
+                            fullWidth
+                        />
+
+                        <TextField
+                            required
+                            autoFocus
+                            error={this.state.newUnits < 0 || this.state.newUnits > 10}
+                            margin="dense"
+                            id="units"
+                            label="Units"
+                            type="number"
+                            onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
+                            fullWidth
+                        />
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="grade"
+                            label="Grade"
+                            type="text"
+                            onChange={(evt) => this.setState({newGrade: evt.target.value})}
+                            fullWidth
+                        />
+
+
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="reason"
+                            label="Reason"
+                            type="text"
+                            onChange={(evt) => this.setState({newReason: evt.target.value})}
+                            fullWidth
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleClose} color="primary" className="cancelButton">
+                            Cancel
+                        </Button>
+
+                        <Button onClick={this.addCourse} color="primary">
+                            Add
+                        </Button>
+                    </DialogActions>
+
+                </Dialog>
 
 
             </Accordion>

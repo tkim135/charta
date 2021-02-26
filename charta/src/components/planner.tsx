@@ -22,19 +22,22 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import Course from '../data/course';
+import Typography from "@material-ui/core/Typography";
 
 interface PlannerState {
     loading: boolean;
     quarters: Array<string>;
     empty: boolean;
     open: boolean;
-    success: boolean;
-    failure: boolean;
+    addQuarterSuccess: boolean;
+    addQuarterFailure: boolean;
+    deleteQuarterSuccess: boolean;
+    deleteQuarterFailure: boolean
     term: string;
     year: number;
     welcome: boolean;
     firstName: string;
+
 }
 
 interface PlannerProps {
@@ -46,6 +49,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
     // TODO: fix duplicated code
+    // this was copied from course.tsx, I did not want to change that code and risk breaking before demo
     sortTerms(terms: Array<string>) {
         let sortedArray: string[] = terms.sort((n1,n2) => {
             if (n1.substring(0,9) > n2.substring(0,9)) {
@@ -126,10 +130,59 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
     constructor(props: PlannerProps) {
         super(props);
-        this.state = {loading: true, quarters: [], empty: false, open: false, success: false, term: "", year: 2021, failure: false, welcome: false, firstName: ""};
+        this.state = {loading: true,
+                    quarters: [],
+                       empty: false,
+                        open: false,
+            addQuarterSuccess: false,
+            addQuarterFailure: false,
+            deleteQuarterFailure: false,
+            deleteQuarterSuccess: false,
+                        term: "",
+                        year: 2021,
+                        welcome: false,
+                        firstName: ""};
+
         this.addQuarter = this.addQuarter.bind(this);
         this.sortTerms = this.sortTerms.bind(this);
+        this.removeItem = this.removeItem.bind(this);
+        this.deleteQuarter = this.deleteQuarter.bind(this);
 
+    }
+
+
+    removeItem(arr: Array<any>, el: any) {
+        let index = arr.indexOf(el);
+        if (index !== -1) {
+            arr.splice(index, 1);
+        }
+        return arr
+    }
+
+    //TODO: delete quarter collection (each user has field which is an array of quarter strings, but also a collection for each quarter)
+    async deleteQuarter(quarter: string) {
+        const db = firebase.firestore();
+        let uid = firebase.auth().currentUser?.uid;
+        const userRef = db.collection('users').doc(uid);
+        const doc = await userRef.get();
+        if (!doc.exists) {
+            console.log('No such user!');
+            return;
+        }
+
+        try {
+            console.log('Document data:', doc.data());
+            let quarters = doc.data()?.quarters;
+            let index = quarters.indexOf(quarter);
+            if (index !== -1) quarters.splice(index, 1);
+            await db.collection("users").doc(uid).update({quarters: quarters});
+            this.setState({quarters: quarters})
+            this.setState({deleteQuarterSuccess: true})
+        }
+        catch (e) {
+            console.log(e);
+            this.setState({deleteQuarterFailure: true})
+        }
 
     }
 
@@ -150,6 +203,9 @@ class Planner extends Component<PlannerProps, PlannerState> {
         let quarters = this.state.quarters;
         quarters.push(quarter);
 
+        quarters = this.sortTerms(quarters);
+
+
         this.setState({quarters: quarters});
 
         await userRef.update({
@@ -160,10 +216,10 @@ class Planner extends Component<PlannerProps, PlannerState> {
             ignore: "true"
         }).then((res) => {
             console.log(res);
-            this.setState({success: true});
+            this.setState({addQuarterSuccess: true});
         }).catch((error) => {
             console.log(error.code, error.message);
-            this.setState({failure: true});
+            this.setState({addQuarterFailure: true});
         });
 
     }
@@ -179,7 +235,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
         return(
             <MuiThemeProvider theme={theme}>
 
-            <Container>
+            <Container maxWidth="xl" >
                 <Backdrop  open={this.state.loading}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
@@ -187,8 +243,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 {/*Align "Planned Schedule" and "Add Quarter" vertically */}
                 <Grid container spacing={3} alignItems='center'>
                     <Grid item>
-                        <h1>Planned Schedule</h1>
-
+                        <Typography component="h1" variant="h5" align="center">Planned Schedule</Typography>
                     </Grid>
                     <Grid item>
                         <Button onClick={() => this.setState({open: true})} >Add quarter<AddCircleIcon/></Button>
@@ -199,22 +254,23 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 <Grid container spacing={3}>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 0){return <Quarter name={this.state.quarters[i]} key={i}/>}
+                            if(i % 3 === 0){return <Quarter deleteQuarter={this.deleteQuarter} name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
                         }) : ''}
 
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 1){return <Quarter name={this.state.quarters[i]} key={i}/>}
+                            if(i % 3 === 1){return <Quarter deleteQuarter={this.deleteQuarter} name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
                         }) : ''}
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 2){return <Quarter name={this.state.quarters[i]} key={i}/>}
+                            if(i % 3 === 2){return <Quarter deleteQuarter={this.deleteQuarter} name={this.state.quarters[i]} key={i}/>}
                             else {return <span/>}
-                        }) : ''}                    </Grid>
+                        }) : ''}
+                    </Grid>
 
                 </Grid>
 
@@ -272,15 +328,28 @@ class Planner extends Component<PlannerProps, PlannerState> {
                     </DialogActions>
                 </Dialog>
 
-
                 <div>
-                    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({addQuarterSuccess: false})} open={this.state.addQuarterSuccess} autoHideDuration={2000}>
                         <MuiAlert severity="success">
                             Quarter added! 😃
                         </MuiAlert>
                     </Snackbar>
 
-                    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({addQuarterFailure: false})} open={this.state.addQuarterFailure} autoHideDuration={2000}>
+                        <MuiAlert severity="warning">
+                            Oops 🥴... something went wrong
+                        </MuiAlert>
+                    </Snackbar>
+
+
+                    <Snackbar onClose={() => this.setState({deleteQuarterSuccess: false})} open={this.state.deleteQuarterSuccess} autoHideDuration={2000}>
+                        <MuiAlert severity="success">
+                            Quarter deleted! 😃
+                        </MuiAlert>
+                    </Snackbar>
+
+
+                    <Snackbar onClose={() => this.setState({deleteQuarterFailure: false})} open={this.state.addQuarterFailure} autoHideDuration={2000}>
                         <MuiAlert severity="warning">
                             Oops 🥴... something went wrong
                         </MuiAlert>
