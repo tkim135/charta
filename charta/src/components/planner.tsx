@@ -351,7 +351,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                     </Snackbar>
 
 
-                    <Snackbar onClose={() => this.setState({deleteQuarterFailure: false})} open={this.state.addQuarterFailure} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({deleteQuarterFailure: false})} open={this.state.deleteQuarterFailure} autoHideDuration={2000}>
                         <MuiAlert severity="warning">
                             Oops 🥴... something went wrong
                         </MuiAlert>
