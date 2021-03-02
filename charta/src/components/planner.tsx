@@ -99,8 +99,10 @@ class Planner extends Component<PlannerProps, PlannerState> {
         const doc = await userRef.get();
 
 
+        // user not signed in, redirect to sign in
         if (!doc.exists) {
             console.log('No such user!');
+
 
         } else {
             console.log('Document data:', doc.data());
@@ -358,19 +360,6 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
 
-                {/*<div>*/}
-                {/*    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>*/}
-                {/*        <MuiAlert severity="success">*/}
-                {/*            Quarter added! 😃*/}
-                {/*        </MuiAlert>*/}
-                {/*    </Snackbar>*/}
-
-                {/*    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>*/}
-                {/*        <MuiAlert severity="warning">*/}
-                {/*            Oops 🥴... something went wrong*/}
-                {/*        </MuiAlert>*/}
-                {/*    </Snackbar>*/}
-                {/*</div>*/}
 
             </Container>
             </MuiThemeProvider>
