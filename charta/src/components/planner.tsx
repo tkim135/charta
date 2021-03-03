@@ -203,6 +203,10 @@ class Planner extends Component<PlannerProps, PlannerState> {
         const userRef = db.collection('users').doc(uid);
 
         let quarters = this.state.quarters;
+        if (quarters.includes(quarter)) {
+            this.setState({addQuarterFailure: true});
+            return;
+        }
         quarters.push(quarter);
 
         quarters = this.sortTerms(quarters);
@@ -339,7 +343,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
                     <Snackbar onClose={() => this.setState({addQuarterFailure: false})} open={this.state.addQuarterFailure} autoHideDuration={2000}>
                         <MuiAlert severity="warning">
-                            Oops 🥴... something went wrong
+                            Oops 🥴... something went wrong! Quarter could not be added.
                         </MuiAlert>
                     </Snackbar>
 
