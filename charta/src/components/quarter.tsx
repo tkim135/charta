@@ -36,7 +36,7 @@ interface QuarterState {
     newReason: string;
     totalUnits: number;
     success: boolean;
-    failure: boolean;
+    addCourseFailure: boolean;
     shouldDeleteQuarter: boolean
 }
 interface QuarterProps {
@@ -104,8 +104,11 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         const db = firebase.firestore();
         const coursesRef = await db.collection('classes');
 
+        // initialize variables
         let courseId = "-1";
         let courseTitle = "";
+        let courseMinUnits = 0;
+        let courseMaxUnits = 10;
 
         await coursesRef.where('Codes', 'array-contains', courseCode.toUpperCase()).get()
             .then(querySnapshot => {
@@ -120,6 +123,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                         console.log(doc.data());
                         courseIds.push(doc.id);
                         courseTitle = doc.data().Title;
+                        courseMinUnits = doc.data()["Min Units"];
+                        courseMaxUnits = doc.data()["Max Units"];
                     });
 
                     if(courseIds.length != 0) {
@@ -132,7 +137,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                 console.log('Error getting document', err);
             });
 
-        return [courseId, courseTitle];
+        let resultsArray : any = [courseId, courseTitle, courseMinUnits, courseMaxUnits];
+        return resultsArray;
     }
 
 
@@ -157,7 +163,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                  newReason: '',
                 totalUnits: 0,
                   success: false,
-                 failure: false,
+                 addCourseFailure: false,
                  shouldDeleteQuarter: false
                     };
 
@@ -174,45 +180,60 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
 
 
-    // TODO: Check if course already in quarter
-    // TODO: Check if units are valid (i.e., not possible to take CS 229 for 10 units, even though it should be)
+    /* Function to add courses to a particular quarter. In cases where we fail to find the
+    course in our database, we immediately return without closing the menu, keeping the user's
+    previous input and allowing them to fix it. In a successful case, the this.handleClose() is
+    called at the end to close the menu. */
     async addCourse() {
 
         const db = firebase.firestore();
         let uid = firebase.auth().currentUser?.uid;
-        let [courseId, courseTitle] = await this.findCourse(this.state.newCode);
+        let [courseId, courseTitle, courseMinUnits, courseMaxUnits] =
+                await this.findCourse(this.state.newCode);
 
         if(courseId === "-1") {
             console.log("course not found");
-            this.setState({failure: true});
+            this.setState({addCourseFailure: true});
+            return;
         }
 
-        else{
-
-            db.collection(`users/${uid}/${this.props.name}`).doc(courseId).set({
-                "units": this.state.newUnits,
-                "grade": this.state.newGrade,
-                "reason": this.state.newReason,
-                "id": courseId,
-                "title": courseTitle,
-                "code": this.state.newCode
-            }).then(() => {
-                console.log("added course");
-                this.setState({success: true});
-
-                let course = new UserCourse(this.state.newCode, this.state.newReason, this.state.newGrade, this.state.newUnits, this.props.name, courseTitle, courseId)
-                let courses = this.state.courses;
-                courses.push(course);
-                this.setState({courses: courses})
-                let newTotalUnits = this.state.totalUnits + this.state.newUnits;
-                this.setState({totalUnits: newTotalUnits});
-            }).catch((error) => {
-                console.log(error.code, error.message);
-                this.setState({failure: true});
-            });
+        let courses = this.state.courses;
+        // check for if course is already in quarter
+        let currentCourseIds = courses.map(course => course.id);
+        if (currentCourseIds.includes(courseId)) {
+            this.setState({addCourseFailure: true});
+            return;
         }
 
+        // check if number of units is appropriate
+        if (this.state.newUnits < courseMinUnits
+            || this.state.newUnits > courseMaxUnits) {
+                this.setState({addCourseFailure: true});
+                return;
+        }
 
+        db.collection(`users/${uid}/${this.props.name}`).doc(courseId).set({
+            "units": this.state.newUnits,
+            "grade": this.state.newGrade,
+            "reason": this.state.newReason,
+            "id": courseId,
+            "title": courseTitle,
+            "code": this.state.newCode
+        }).then(() => {
+            console.log("added course");
+            this.setState({success: true});
+
+            let course = new UserCourse(this.state.newCode, this.state.newReason, this.state.newGrade, this.state.newUnits, this.props.name, courseTitle, courseId)
+            let courses = this.state.courses;
+            courses.push(course);
+            this.setState({courses: courses})
+            let newTotalUnits = this.state.totalUnits + this.state.newUnits;
+            this.setState({totalUnits: newTotalUnits});
+        }).catch((error) => {
+            console.log(error.code, error.message);
+            this.setState({addCourseFailure: true});
+            return;
+        });
 
         this.handleClose();
 
@@ -305,9 +326,9 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                         </MuiAlert>
                     </Snackbar>
 
-                    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({addCourseFailure: false})} open={this.state.addCourseFailure} autoHideDuration={2000}>
                         <MuiAlert severity="warning">
-                            Oops 🥴... something went wrong
+                            Sorry... we're not able to add that class with that number of units 🥴
                         </MuiAlert>
                     </Snackbar>
                 </div>

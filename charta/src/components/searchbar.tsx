@@ -29,7 +29,9 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
 
     constructor(props: SearchBarProps) {
         super(props);
-        this.state = {loading: false, open: true, suggestions: [], query: ''};
+        // set open to false so that "No options" dropdown doesn't appear when user
+        // isn't inputting
+        this.state = {loading: false, open: false, suggestions: [], query: ''};
     }
 
     setOpen(open: boolean) {
