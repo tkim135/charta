@@ -53,7 +53,9 @@ class CourseCard extends Component<CourseCardProps>{
                 <br/>
 
                 {course.terms.map((term: string, i: number) => {
-                    return <Chip color="secondary" label={term} key={i}/>
+                    // change background color to be less harsh for the eye
+                    return <Chip color="secondary" style={{backgroundColor:'#ba5a00'}}
+                            label={term} key={i}/>
                 }) }
 
                 <Chip label={course.gradingBasis}/>
