@@ -91,8 +91,6 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
 
     }
 
-
-
     render() {
         return (
             <div>

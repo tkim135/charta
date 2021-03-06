@@ -12,52 +12,64 @@ const db = admin.firestore();
 //   response.send("Hello from Firebase!");
 // });
 
-exports.recommendation = functions.https.onRequest((request, response) => {
+exports.recommendation = functions.https.onCall((data, context) => {
   // all recommendations that will be returned
-  recommendations = []
-  
-  // parameters passed to query
-  terms = []; 
-  units = 0;
-  reqs = request.query.reqs.split(','); 
-
-  // some post-processing to params passed to query 
-  if (request.query.terms != null) {
-    terms = request.query.terms.split(','); 
-  }
-  if (request.query.units != null && request.query.units > 0) {
-    units = request.query.units;
-  }
-
-  filterByTerms = terms.length > 0; 
-  filterByUnits = units > 0
 
   // query database on GER requirements
-  return db.collection('classes').where('GER', 'array-contains-any', reqs).get().then(function(courses) {
-    courses.forEach((course) => {
-        let meetsReq = true;
+  return new Promise((resolve, reject) => {
+    var recommendations = {}
+  
+    // parameters passed to query
+    terms = []; 
+    units = 0;
 
-        // if extra parameters were passed, filter by these parameters
-        if (filterByTerms) {
-          let courseTerms = course.data().Terms; 
-          let intersection = terms.filter(t => courseTerms.includes(t)); 
-          if (intersection.length < 1) {
-            meetsReq = false;
-          }
-        }   
-        if (filterByUnits) {
-          let minCourseUnits = course.data()['Min Units']
-          let maxCourseUnits = course.data()['Max Units']
+    if (data.reqs != null) {
+      reqs = data.reqs.split(','); 
+    }
+    // some post-processing to params passed to query 
+    if (data.terms != null) {
+      terms = data.terms.split(','); 
+    }
+    if (data.units != null && data.units > 0) {
+      units = data.units;
+    }
+  
+    filterByTerms = terms.length > 0; 
+    filterByUnits = units > 0
+    db.collection('classes').where('GER', 'array-contains-any', reqs)
+      .get()
+      .then(courses => {
+        courses.forEach(course => {
+          let meetsReq = true; 
 
-          if (units > maxCourseUnits || units < minCourseUnits) {
-            meetsReq = false
+          if (filterByTerms) {
+            let courseTerms = course.data().Terms; 
+            let intersection = terms.filter(t => courseTerms.includes(t)); 
+            if (intersection.length < 1) {
+              meetsReq = false;
+            }
           }
-        } 
-        if (meetsReq) {
-          recommendations.push(course.data()); 
-        }
-    }); 
-    // return all recommendations
-    response.send(recommendations); 
-  }); 
+
+          if (filterByUnits) {
+            let minCourseUnits = course.data()['Min Units']
+            let maxCourseUnits = course.data()['Max Units']
+
+            if (units > maxCourseUnits || units < minCourseUnits) {
+              meetsReq = false
+            }
+          }
+
+          if (meetsReq) {
+            key = course.id
+            var courseData = course.data()
+            recommendations[key] = courseData
+          } 
+        })
+        var recommendationsStr = JSON.stringify(recommendations, null, '\t'); 
+        // console.log(recommendationsStr)
+        resolve(recommendations)
+      })
+
+  })
+
 });   

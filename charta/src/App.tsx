@@ -15,6 +15,7 @@ import Home from './components/home';
 import Landing from './components/landing';
 import Settings from './account/settings';
 import SearchResults from './components/searchresults';
+import RecommenderPage from './components/recommenderpage'
 
 import {withRouter} from 'react-router-dom';
 
@@ -30,6 +31,7 @@ class App extends Component {
                     <Route exact path="/signup" component={SignUp} />
                     <Route exact path="/settings" component={Settings} />
                     <Route path="/search/:courseId" component={SearchResults} />
+                    <Route path='/recs' component={RecommenderPage}/>
                 </Switch>
 
             </Router>
