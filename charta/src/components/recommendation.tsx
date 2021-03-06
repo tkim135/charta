@@ -25,7 +25,6 @@ class Recommendation extends Component<RecommendationProps , RecommendationState
     constructor(props: RecommendationProps) {
         super(props);
         this.generateRecommendations = this.generateRecommendations.bind(this);
-
     }
 
     render() {
