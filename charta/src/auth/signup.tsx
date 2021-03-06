@@ -54,7 +54,7 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                 const db = firebase.firestore();
                 localStorage.setItem('user', userCredential?.toString())
 
-                await db.collection('users').doc(user?.uid).set({"firstName": this.state.firstName, "quarters": []});
+                await db.collection('users').doc(user?.uid).set({"firstName": this.state.firstName, "email":this.state.email, "quarters": []});
 
                 // user?.uid
                 this.setState({redirect: true})
