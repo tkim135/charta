@@ -99,8 +99,10 @@ class Planner extends Component<PlannerProps, PlannerState> {
         const doc = await userRef.get();
 
 
+        // user not signed in, redirect to sign in
         if (!doc.exists) {
             console.log('No such user!');
+
 
         } else {
             console.log('Document data:', doc.data());
@@ -201,6 +203,10 @@ class Planner extends Component<PlannerProps, PlannerState> {
         const userRef = db.collection('users').doc(uid);
 
         let quarters = this.state.quarters;
+        if (quarters.includes(quarter)) {
+            this.setState({addQuarterFailure: true});
+            return;
+        }
         quarters.push(quarter);
 
         quarters = this.sortTerms(quarters);
@@ -337,7 +343,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
                     <Snackbar onClose={() => this.setState({addQuarterFailure: false})} open={this.state.addQuarterFailure} autoHideDuration={2000}>
                         <MuiAlert severity="warning">
-                            Oops 🥴... something went wrong
+                            Oops 🥴... something went wrong! Quarter could not be added.
                         </MuiAlert>
                     </Snackbar>
 
@@ -349,7 +355,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                     </Snackbar>
 
 
-                    <Snackbar onClose={() => this.setState({deleteQuarterFailure: false})} open={this.state.addQuarterFailure} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({deleteQuarterFailure: false})} open={this.state.deleteQuarterFailure} autoHideDuration={2000}>
                         <MuiAlert severity="warning">
                             Oops 🥴... something went wrong
                         </MuiAlert>
@@ -358,19 +364,6 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
 
-                {/*<div>*/}
-                {/*    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>*/}
-                {/*        <MuiAlert severity="success">*/}
-                {/*            Quarter added! 😃*/}
-                {/*        </MuiAlert>*/}
-                {/*    </Snackbar>*/}
-
-                {/*    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>*/}
-                {/*        <MuiAlert severity="warning">*/}
-                {/*            Oops 🥴... something went wrong*/}
-                {/*        </MuiAlert>*/}
-                {/*    </Snackbar>*/}
-                {/*</div>*/}
 
             </Container>
             </MuiThemeProvider>

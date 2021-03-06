@@ -23,6 +23,7 @@ import UserCourse from '../data/usercourse';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface QuarterState {
     addCourse: boolean;
@@ -35,7 +36,7 @@ interface QuarterState {
     newReason: string;
     totalUnits: number;
     success: boolean;
-    failure: boolean;
+    addCourseFailure: boolean;
     shouldDeleteQuarter: boolean
 }
 interface QuarterProps {
@@ -65,7 +66,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                // let course = await this.loadCourse(doc);
                let courseData = doc.data();
                if(courseData?.ignore) return
-               let course = new UserCourse(courseData?.code, courseData?.reason, courseData?.grade, courseData?.units, this.props.name, courseData?.title)
+               let course = new UserCourse(courseData?.code, courseData?.reason, courseData?.grade, courseData?.units, this.props.name, courseData?.title, doc.id)
                courses.push(course);
                totalUnits += course.units;
            })
@@ -98,13 +99,58 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     }
 
 
+    //TODO: case when multiple course ids
+    async findCourse(courseCode: string) {
+        const db = firebase.firestore();
+        const coursesRef = await db.collection('classes');
+
+        // initialize variables
+        let courseId = "-1";
+        let courseTitle = "";
+        let courseMinUnits = 0;
+        let courseMaxUnits = 10;
+
+        await coursesRef.where('Codes', 'array-contains', courseCode.toUpperCase()).get()
+            .then(querySnapshot => {
+                if (querySnapshot.empty) {
+                    console.log("nothing found");
+
+                } else {
+                    let courseIds: Array<string> = [];
+                    let courseTitle = "";
+
+                    querySnapshot.docs.forEach(doc => {
+                        console.log(doc.data());
+                        courseIds.push(doc.id);
+                        courseTitle = doc.data().Title;
+                        courseMinUnits = doc.data()["Min Units"];
+                        courseMaxUnits = doc.data()["Max Units"];
+                    });
+
+                    if(courseIds.length != 0) {
+                        courseId = courseIds[0];
+
+                    }
+                }
+            })
+            .catch(err => {
+                console.log('Error getting document', err);
+            });
+
+        let resultsArray : any = [courseId, courseTitle, courseMinUnits, courseMaxUnits];
+        return resultsArray;
+    }
+
+
     constructor(props: QuarterProps) {
         super(props);
 
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.handleAddCourse = this.handleAddCourse.bind(this);
+        this.addCourse = this.addCourse.bind(this);
+        this.findCourse = this.findCourse.bind(this);
         this.handleDeleteQuarter = this.handleDeleteQuarter.bind(this);
+        this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
         this.loadCourses = this.loadCourses.bind(this);
 
         this.state = {addCourse: false,
@@ -117,7 +163,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                  newReason: '',
                 totalUnits: 0,
                   success: false,
-                 failure: false,
+                 addCourseFailure: false,
                  shouldDeleteQuarter: false
                     };
 
@@ -133,87 +179,87 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     }
 
 
-    //TODO: case when multiple course ids
-    async handleAddCourse() {
-        const db = firebase.firestore();
-        const coursesRef = await db.collection('classes');
 
-        let courseId = "-1";
-        let courseTitle = "";
-
-        await coursesRef.where('Codes', 'array-contains', this.state.newCode.toUpperCase()).get()
-            .then(querySnapshot => {
-                if (querySnapshot.empty) {
-                    console.log("nothing found");
-
-                } else {
-                    let courseIds: Array<string> = [];
-                    let courseTitle = "";
-
-                    querySnapshot.docs.forEach(doc => {
-                        console.log(doc.data());
-                        courseIds.push(doc.id);
-                        courseTitle = doc.data().Title;
-                    });
-
-                    if(courseIds.length != 0) {
-                        courseId = courseIds[0];
-
-                    }
-                }
-            })
-            .catch(err => {
-                console.log('Error getting document', err);
-            });
-
-        return [courseId, courseTitle];
-    }
-
-
-
-    // TODO: Check if course already in quarter
-    // TODO: Check if units are valid (i.e., not possible to take CS 229 for 10 units, even though it should be)
+    /* Function to add courses to a particular quarter. In cases where we fail to find the
+    course in our database, we immediately return without closing the menu, keeping the user's
+    previous input and allowing them to fix it. In a successful case, the this.handleClose() is
+    called at the end to close the menu. */
     async addCourse() {
 
         const db = firebase.firestore();
         let uid = firebase.auth().currentUser?.uid;
-        let [courseId, courseTitle] = await this.handleAddCourse();
+        let [courseId, courseTitle, courseMinUnits, courseMaxUnits] =
+                await this.findCourse(this.state.newCode);
 
         if(courseId === "-1") {
             console.log("course not found");
-            this.setState({failure: true});
+            this.setState({addCourseFailure: true});
+            return;
         }
 
-        else{
-
-            db.collection(`users/${uid}/${this.props.name}`).doc(courseId).set({
-                "units": this.state.newUnits,
-                "grade": this.state.newGrade,
-                "reason": this.state.newReason,
-                "id": courseId,
-                "title": courseTitle,
-                "code": this.state.newCode
-            }).then(() => {
-                console.log("added course");
-                this.setState({success: true});
-
-                let course = new UserCourse(this.state.newCode, this.state.newReason, this.state.newGrade, this.state.newUnits, this.props.name, courseTitle)
-                let courses = this.state.courses;
-                courses.push(course);
-                this.setState({courses: courses})
-                let newTotalUnits = this.state.totalUnits + this.state.newUnits;
-                this.setState({totalUnits: newTotalUnits});
-            }).catch((error) => {
-                console.log(error.code, error.message);
-                this.setState({failure: true});
-            });
+        let courses = this.state.courses;
+        // check for if course is already in quarter
+        let currentCourseIds = courses.map(course => course.id);
+        if (currentCourseIds.includes(courseId)) {
+            this.setState({addCourseFailure: true});
+            return;
         }
 
+        // check if number of units is appropriate
+        if (this.state.newUnits < courseMinUnits
+            || this.state.newUnits > courseMaxUnits) {
+                this.setState({addCourseFailure: true});
+                return;
+        }
 
+        db.collection(`users/${uid}/${this.props.name}`).doc(courseId).set({
+            "units": this.state.newUnits,
+            "grade": this.state.newGrade,
+            "reason": this.state.newReason,
+            "id": courseId,
+            "title": courseTitle,
+            "code": this.state.newCode
+        }).then(() => {
+            console.log("added course");
+            this.setState({success: true});
+
+            let course = new UserCourse(this.state.newCode, this.state.newReason, this.state.newGrade, this.state.newUnits, this.props.name, courseTitle, courseId)
+            let courses = this.state.courses;
+            courses.push(course);
+            this.setState({courses: courses})
+            let newTotalUnits = this.state.totalUnits + this.state.newUnits;
+            this.setState({totalUnits: newTotalUnits});
+        }).catch((error) => {
+            console.log(error.code, error.message);
+            this.setState({addCourseFailure: true});
+            return;
+        });
 
         this.handleClose();
 
    }
+
+   async handleDeleteCourse(index: number) {
+       const db = firebase.firestore();
+       let courseId = this.state.courses[index].id;
+       let uid = firebase.auth().currentUser?.uid;
+       let success = false;
+
+       db.collection(`users/${uid}/${this.props.name}`).doc(uid).delete().then(() => {
+           console.log("Course successfully deleted!");
+           success = true;
+       }).catch((error) => {
+           console.error("Error deleting course: ", error);
+       });
+
+       if(success) {
+           let courses = this.state.courses;
+           courses.slice(index, 1 );
+           this.setState({courses: courses});
+       }
+
+   }
+
 
    handleDeleteQuarter() {
        this.setState({shouldDeleteQuarter: false});
@@ -241,6 +287,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                     <TableCell align="right">Units</TableCell>
                                     <TableCell align="right">Grade</TableCell>
                                     <TableCell align="right">Reason</TableCell>
+                                    <TableCell align="right">Action</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -252,12 +299,14 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                         <TableCell align="right">{course.units}</TableCell>
                                         <TableCell align="right">{course.grade}</TableCell>
                                         <TableCell align="right">{course.reason}</TableCell>
+                                        <TableCell align="right"> <Button onClick={() => this.handleDeleteCourse(i)}><DeleteIcon/></Button></TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                             <TableRow>
                                 <TableCell>Total</TableCell>
                                 <TableCell align="right">{this.state.totalUnits}</TableCell>
+                                <TableCell align="right"> </TableCell>
                                 <TableCell align="right"> </TableCell>
                                 <TableCell align="right"> </TableCell>
                             </TableRow>
@@ -277,9 +326,9 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                         </MuiAlert>
                     </Snackbar>
 
-                    <Snackbar onClose={() => this.setState({failure: false})} open={this.state.failure} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({addCourseFailure: false})} open={this.state.addCourseFailure} autoHideDuration={2000}>
                         <MuiAlert severity="warning">
-                            Oops 🥴... something went wrong
+                            Sorry... we're not able to add that class with that number of units 🥴
                         </MuiAlert>
                     </Snackbar>
                 </div>
