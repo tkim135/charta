@@ -69,7 +69,27 @@ h1{
   margin-bottom: 3vh;
 }
 
+.description {
+  color: grey;
+  font-size: 17px;
+}
+
 .gradient {
     background: linear-gradient(to bottom, #6fcf97 0%, #ffffff 100%);
     min-height: 70vh;
+}
+
+.table {
+  border: 2px solid #6fcf97;
+  width: 600px;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.label {
+  background-color: #6fcf97;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  text-align: left;
 }

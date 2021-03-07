@@ -14,6 +14,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect} from "react-router-do
 import Home from './components/home';
 import Landing from './components/landing';
 import Settings from './account/settings';
+import StudyGroups from './components/study';
 import SearchResults from './components/searchresults';
 import RecommenderPage from './components/recommenderpage'
 
@@ -32,6 +33,7 @@ class App extends Component {
                     <Route exact path="/settings" component={Settings} />
                     <Route path="/search/:courseId" component={SearchResults} />
                     <Route path='/recs' component={RecommenderPage}/>
+                    <Route exact path="/studygroups/:courseId" component={StudyGroups} />
                 </Switch>
 
             </Router>

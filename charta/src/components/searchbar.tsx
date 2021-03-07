@@ -76,6 +76,7 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                             doc.data()["Grading Basis"],
                             doc.data()["Min Units"],
                             doc.data()["Max Units"],
+                            doc.data()["StudyPartners"],
                             doc.data()["Terms"],
                             doc.data()["Title"]
                         ));
