@@ -71,7 +71,7 @@ class Header extends Component<HeaderProps, HeaderState>{
                 {this.state.firstName ?  <h1>Welcome, {this.state.firstName}</h1> : <h1></h1>}
 
                 <Button color="inherit" onClick={this.handleSignout}><Link to="/signin">Sign out</Link></Button>
-                <Link to={"settings"}><Button startIcon={<SettingsIcon style={{ color: grey[50] }}/>}/></Link>
+                <Link to={"/settings"}><Button startIcon={<SettingsIcon style={{ color: grey[50] }}/>}/></Link>
 
             </Toolbar>
               
