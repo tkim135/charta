@@ -97,7 +97,7 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
     constructor (props: RecommenderPageProps) {
         super(props); 
         
-        let course =  new Course("", [], "", [], "", 0, 0, [], "");
+        let course =   new Course("", [], "", [], "", 0, 0, [], [], "");
 
         let _checkedReqs = new Array(13)
         let _checkedTerms = new Array(4)
@@ -240,8 +240,10 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                     courseElements["Grading Basis"],
                     courseElements["Min Units"],
                     courseElements["Max Units"],
+                    [],
                     courseElements["Terms"],
                     courseElements["Title"]
+
                 );
                 
                 this.state.recommendations.push(course)
