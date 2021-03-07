@@ -1,0 +1,70 @@
+.mainContent {
+    /* background-color: #e0cad3; */
+    /* min-height: 50vh;  */
+}
+
+.contentDiv {
+    display: flex; 
+    /* background-color: #421a2b; */
+    flex-direction: column;
+    align-items: center;
+    width: inherit; 
+    height: 100%; 
+    padding: 40px; 
+}
+
+.searchBarDiv {
+    /* background-color: blue; */
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 60vw; 
+}
+
+.generateButton {
+    height: inherit; 
+    background-color: lawngreen;
+}
+
+.sidebarOuterDiv { 
+   display: flex; 
+   /* background-color: orange; */
+   flex-direction: row;
+   justify-content: space-between;
+   align-items: space-between;
+   width: 100%; 
+   height: inherit; 
+   margin-top: 30px;
+   overflow-y:auto; 
+   /* height: 200px;  */
+}
+
+.sidebarInnerDiv {
+    /* background-color: wheat; */
+    width: 20vw; 
+    /* height: 200%;   */
+    display: flex; 
+    flex-direction: column; 
+    overflow-y:auto; 
+
+}
+.containerStyle {
+    /* background-color: pink; */
+}
+
+.loadingDiv {
+    margin-top: 30vh;
+}
+.formLabel {
+    font-size: x-small; 
+}
+
+.filterButtons {
+    margin-top: 10px;
+}
+
+.showMoreDiv {
+    margin-bottom: 10px;
+    margin-top: 10px; 
+}
