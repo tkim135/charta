@@ -31,7 +31,8 @@
    display: flex; 
    /* background-color: orange; */
    flex-direction: row;
-   justify-content: flex-end;
+   justify-content: space-between;
+   align-items: space-between;
    width: 100%; 
    height: inherit; 
    margin-top: 30px;
@@ -45,8 +46,15 @@
     /* height: 200%;   */
     display: flex; 
     flex-direction: column; 
-    align-items: flex-end; 
-    font-size: 10px; 
+    overflow-y:auto; 
+
+}
+.containerStyle {
+    /* background-color: pink; */
+}
+
+.loadingDiv {
+    margin-top: 30vh;
 }
 .formLabel {
     font-size: x-small; 
@@ -54,4 +62,9 @@
 
 .filterButtons {
     margin-top: 10px;
+}
+
+.showMoreDiv {
+    margin-bottom: 10px;
+    margin-top: 10px; 
 }

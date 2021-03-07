@@ -30,8 +30,8 @@ class App extends Component {
                     <Route exact path="/signin" component={SignIn} />
                     <Route exact path="/signup" component={SignUp} />
                     <Route exact path="/settings" component={Settings} />
-                    <Route path="/search/:courseId" component={SearchResults} />
                     <Route path='/recs' component={RecommenderPage}/>
+                    <Route path="/search/:courseId" component={SearchResults} />
                 </Switch>
 
             </Router>
