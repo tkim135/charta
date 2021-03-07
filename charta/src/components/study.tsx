@@ -80,7 +80,6 @@ class StudyGroups extends Component<StudyProps, StudyState>{
         	//check if user in study groups list for checkbox on initialization:
         	let uid = firebase.auth().currentUser?.uid;
         	if(uid && userIds.indexOf(uid) !== -1) {
-        		console.log('hi');
         		this.setState({addedToGroup : true});
         	}
         	//set state
@@ -135,7 +134,6 @@ class StudyGroups extends Component<StudyProps, StudyState>{
     	let course = this.state.course;
     	let names = this.state.names;
     	let emails = this.state.emails;
-    	console.log(this.state.addedToGroup);
 
     	return(
 
