@@ -6,10 +6,11 @@ class Course {
     gradingBasis: string;
     minUnits: number;
     maxUnits: number;
+    studyPartners: Array<string>;
     terms: Array<string>;
     title: string;
 
-    constructor(id: string, codes: Array<string>, description: string, GER: Array<string>, gradingBasis: string, minUnits: number, maxUnits: number, terms: Array<string>, title: string) {
+    constructor(id: string, codes: Array<string>, description: string, GER: Array<string>, gradingBasis: string, minUnits: number, maxUnits: number, studyPartners: Array<string>, terms: Array<string>, title: string) {
         this.id = id;
         this.codes = codes;
         this.description = description;
@@ -17,6 +18,7 @@ class Course {
         this.gradingBasis = gradingBasis;
         this.minUnits = minUnits;
         this.maxUnits = maxUnits;
+        this.studyPartners = studyPartners;
         this.terms = this.sortTerms(terms);
         this.title = title;
     }

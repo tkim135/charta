@@ -15,6 +15,7 @@ import Button from '@material-ui/core/Button';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {Link} from 'react-router-dom';
 
 interface SearchResultState {
     course: Course,
@@ -64,7 +65,7 @@ class CourseCard extends Component<CourseCardProps>{
             </CardContent>
 
             <CardActions>
-                    <Button size="small">Find study groups</Button>
+                    <Button size="small" ><Link to={'/studygroups/' + course.id }>Find study groups</Link></Button>
                     <Button size="small">Add to academic plan <AddCircleIcon/></Button>
                     <Button size="small">Find similar classes</Button>
             </CardActions>
@@ -79,7 +80,7 @@ class SearchResults extends Component<SearchResultProps & RouteComponentProps, S
 
     constructor(props: any) {
         super(props);
-        let course =  new Course("", [], "", [], "", 0, 0, [], "");
+        let course =  new Course("", [], "", [], "", 0, 0, [], [], "");
         this.state = {course: course, loading: true}
 
         this.loadCourseData = this.loadCourseData.bind(this);
@@ -109,6 +110,7 @@ class SearchResults extends Component<SearchResultProps & RouteComponentProps, S
                 courseElements["Grading Basis"],
                 courseElements["Min Units"],
                 courseElements["Max Units"],
+                courseElements["StudyPartners"],
                 courseElements["Terms"],
                 courseElements["Title"]
             );
