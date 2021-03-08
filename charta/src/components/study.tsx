@@ -31,6 +31,7 @@ class StudyGroups extends Component<StudyProps, StudyState>{
 
         this.loadCourseData = this.loadCourseData.bind(this);
         this.handleChange = this.handleChange.bind(this);
+
     }
 
     async loadCourseData() {
@@ -76,12 +77,19 @@ class StudyGroups extends Component<StudyProps, StudyState>{
         		names[i] = doc.data()?.firstName;
         		emails[i] = doc.data()?.email;
         	}
+        	//check if user in study groups list for checkbox on initialization:
+        	let uid = firebase.auth().currentUser?.uid;
+        	if(uid && userIds.indexOf(uid) !== -1) {
+        		this.setState({addedToGroup : true});
+        	}
+        	//set state
         	this.setState({names: names, emails: emails});
         }
     }
 
     async componentDidMount() {
         await this.loadCourseData();
+
     }
 
     async handleChange() {
@@ -168,7 +176,7 @@ class StudyGroups extends Component<StudyProps, StudyState>{
           					))}
       					</table>
       					<label className="description">
-            		<input type="checkbox" defaultChecked={this.state.addedToGroup}
+            		<input type="checkbox" checked={this.state.addedToGroup}
             			onChange={this.handleChange}/> 
             			Add me to the list!
           			</label>
