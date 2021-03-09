@@ -7,9 +7,8 @@ import './App.css';
 import SignIn from './auth/signin';
 // @ts-ignore
 import SignUp from "./auth/signup";
-import NotFound from './components/notfound'
 
-import { BrowserRouter as Router, Switch, Route, Redirect} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
 // @ts-ignore
 import Home from './components/home';
 import Landing from './components/landing';
@@ -17,8 +16,7 @@ import Settings from './account/settings';
 import StudyGroups from './components/study';
 import SearchResults from './components/searchresults';
 import RecommenderPage from './components/recommenderpage'
-
-import {withRouter} from 'react-router-dom';
+import 'firebase';
 
 class App extends Component {
 

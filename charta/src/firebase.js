@@ -1,5 +1,5 @@
 import { firebase } from '@firebase/app';
-
+import "firebase/auth";
 
 // Add the Firebase products that you want to use
 import 'firebase/firestore';

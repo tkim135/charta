@@ -13,21 +13,19 @@ import Recommendation from './recommendation';
 import firebase from "firebase";
 import {Redirect} from "react-router";
 import Grid from '@material-ui/core/Grid';
-import signin from "../auth/signin";
 
 interface HomeState {
-    signedIn: boolean
+    signedIn: boolean,
+
 }
 
 interface HomeProps {
-
 }
 
 class Home extends Component<HomeProps, HomeState>{
 
     constructor(props: HomeProps) {
         super(props);
-        // this.state = {signedIn: firebase.auth().currentUser !== null}
 
         this.state = {
             signedIn: localStorage.getItem('user') !== null,
@@ -51,11 +49,10 @@ class Home extends Component<HomeProps, HomeState>{
 
         if(this.state.signedIn){
             return (
-                <div className="flex flex-col h-screen justify-between">
-                    <Header/>
-                    {/*<Recommendation/>*/}
-                    {/*<Planner/>*/}
 
+                <div className="flex flex-col h-screen justify-between">
+                    
+                    <Header/>
                     <Grid container>
                         <Grid item xs={3} md={3}>
                             <Recommendation/>
@@ -69,9 +66,6 @@ class Home extends Component<HomeProps, HomeState>{
                     <Footer/>
 
                 </div>
-
-
-
             );
         }
         else{
