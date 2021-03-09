@@ -62,23 +62,6 @@ class Signin extends Component<SigninProps, SigninState> {
             });
     }
 
-    // async handleSubmit(e:  React.FormEvent) {
-    //     e.preventDefault();
-
-    //     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-    //         .then((userCredential) => {
-
-    //             localStorage.setItem('user', 'true')
-    //             this.setState({redirect: true});
-
-    //         })
-    //         .catch((error) => {
-    //             console.log(error.code, error.message);
-    //             this.setState({failed: true})
-    //             this.setState({errorMsg: error.message})
-
-    //         });
-    // }
 
     handleClose() {
 

@@ -252,8 +252,11 @@ class Quarter extends Component<QuarterProps, QuarterState> {
            console.log("Course successfully deleted!");
 
            let courses = this.state.courses;
+           // update total unit count after deletion
+           let newTotalUnits = this.state.totalUnits - courses[index].units;
            courses.splice(index, 1 );
-           this.setState({courses: courses, deleteCourseSuccess: true});
+           this.setState({courses: courses, deleteCourseSuccess: true,
+                        totalUnits: newTotalUnits});
 
         
        }).catch((error) => {
@@ -342,7 +345,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                 <div>
                     <Snackbar onClose={() => this.setState({deleteCourseSuccess: false})} open={this.state.deleteCourseSuccess} autoHideDuration={2000}>
                         <MuiAlert severity="success">
-                            Class deleted added! 😃
+                            Class deleted! 😃
                         </MuiAlert>
                     </Snackbar>
 
@@ -383,7 +386,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             id="name"
                             label="Course Code (e.g., CS 194W)"
                             type="text"
-                            value={this.state.newCode}
+                            value={this.state.newCode} // give current value as default value
                             onChange={(evt) => this.setState({newCode: evt.target.value})}
                             fullWidth
                         />
@@ -396,6 +399,9 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             id="units"
                             label="Units"
                             type="number"
+                            // give current value as default value; this helps the user know
+                            // what the current value is in case the value isn't updated from last time
+                            value={this.state.newUnits != 0 && this.state.newUnits}
                             onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
                             fullWidth
                         />
@@ -406,6 +412,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             id="grade"
                             label="Grade"
                             type="text"
+                            value={this.state.newGrade} // give current value as default value
                             onChange={(evt) => this.setState({newGrade: evt.target.value})}
                             fullWidth
                         />
@@ -417,6 +424,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             id="reason"
                             label="Reason"
                             type="text"
+                            value={this.state.newReason} // give current value as default value
                             onChange={(evt) => this.setState({newReason: evt.target.value})}
                             fullWidth
                         />
