@@ -56,13 +56,14 @@ class Header extends Component<HeaderProps, HeaderState>{
     }
 
     render(){
+
        return (
         <header className="header">
           <AppBar position="static">
             <Toolbar>
-
                 <Box display='flex' flexGrow={1}>
-                    <IconButton edge="start"  color="inherit" aria-label="menu">  </IconButton>
+                       <img alt="Charta logo" src={"./images/circle194Logo.png"} width="50" />
+ 
                     <Button><h1 id="title"><Link to="/home">Charta</Link> </h1></Button>
 
                     <SearchBar/>

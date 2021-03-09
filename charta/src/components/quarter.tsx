@@ -24,6 +24,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import AccordionActions from '@material-ui/core/AccordionActions';
 
 interface QuarterState {
     addCourse: boolean;
@@ -152,6 +154,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         this.handleDeleteQuarter = this.handleDeleteQuarter.bind(this);
         this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
         this.loadCourses = this.loadCourses.bind(this);
+        this.deleteButtonPressed = this.deleteButtonPressed.bind(this);
 
         this.state = {addCourse: false,
                    onClick: this.handleOpen,
@@ -267,16 +270,32 @@ class Quarter extends Component<QuarterProps, QuarterState> {
    }
 
 
+   deleteButtonPressed(event: any) {
+     event.stopPropagation();
+     this.setState({shouldDeleteQuarter: true});
+   }
+
 
 
     render() {
 
         return (
             <Accordion>
-                <AccordionSummary className="quarter-summary">
-                    <div>
-                        <h1 id="quarter-title"><strong>{this.props.name}</strong></h1>
-                    </div>
+                <AccordionSummary className="quarter-summary" 
+                    expandIcon={<ExpandMoreIcon/>}
+                    aria-label="Expand"
+                    aria-controls="additional-actions1-content"                
+                   >
+                        <Button onClick={this.deleteButtonPressed} onFocus={(event: any) => event.stopPropagation()}>
+                             <HighlightOffIcon/>
+                        </Button>
+
+                        <h1 id="quarter-title" style={{display: "inline"}}><strong>{this.props.name}</strong></h1>
+                                                   
+
+                       
+
+
                 </AccordionSummary>
                 <AccordionDetails>
                     <TableContainer >
@@ -299,7 +318,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                         <TableCell align="right">{course.units}</TableCell>
                                         <TableCell align="right">{course.grade}</TableCell>
                                         <TableCell align="right">{course.reason}</TableCell>
-                                        <TableCell align="right"> <Button onClick={() => this.handleDeleteCourse(i)}><DeleteIcon/></Button></TableCell>
+                                        <TableCell align="right"> <Button className="delete-button" onClick={() => this.handleDeleteCourse(i)}><DeleteIcon/></Button></TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -312,12 +331,23 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             </TableRow>
 
                         </Table>
-                        <Button onClick={this.handleOpen}><AddCircleIcon/></Button>
-                        <Button onClick={()=> this.setState({shouldDeleteQuarter: true})}><HighlightOffIcon/></Button>
 
+                        <div className="grid grid-cols-3" style={{padding: "20px 0 0 20px"}}>
+                            <div className="col-start-3">
+                            <Button onClick={this.handleOpen}>Add class <AddCircleIcon/></Button>
+
+                            </div>
+                        </div>
+                    
                     </TableContainer>
 
+
+
                 </AccordionDetails>
+                
+
+                
+          
 
                 <div>
                     <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>
