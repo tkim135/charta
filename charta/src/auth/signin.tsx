@@ -27,6 +27,7 @@ interface SigninState{
     redirect: boolean,
     failed: boolean,
     errorMsg: string,
+    uid: string
 }
 
 class Signin extends Component<SigninProps, SigninState> {
@@ -35,7 +36,7 @@ class Signin extends Component<SigninProps, SigninState> {
     constructor(props: SigninProps) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.state = {email: '',  password: '', redirect: false, failed: false, errorMsg: ''}
+        this.state = {email: '',  password: '', redirect: false, failed: false, errorMsg: '', uid: ""}
         this.handleEmailReset = this.handleEmailReset.bind(this);
 
     }
@@ -47,8 +48,10 @@ class Signin extends Component<SigninProps, SigninState> {
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
             .then((userCredential) => {
 
-                localStorage.setItem('user', userCredential?.toString())
-                this.setState({redirect: true});
+                localStorage.setItem('user', 'true')
+                let uid = userCredential.user ? userCredential.user.uid : "";
+
+                this.setState({redirect: true, uid: uid});
 
             })
             .catch((error) => {
@@ -58,6 +61,7 @@ class Signin extends Component<SigninProps, SigninState> {
 
             });
     }
+
 
     handleClose() {
 
@@ -72,7 +76,8 @@ class Signin extends Component<SigninProps, SigninState> {
     render() {
 
         if(this.state.redirect) {
-            return <Redirect to='/home'/>;
+            let uid = this.state.uid;
+            return <Redirect to={{pathname: '/home',  state: { uid: uid } }} />
         }
 
         return(

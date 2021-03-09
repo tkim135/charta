@@ -1,13 +1,11 @@
 
 import React, {Component} from 'react';
-import {Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
 import '../App.css';
 
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Footer from "./footer";
 import Grid from "@material-ui/core/Grid";
 import Toolbar from "@material-ui/core/Toolbar";

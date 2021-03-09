@@ -93,38 +93,38 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
     async componentDidMount() {
-        const db = firebase.firestore();
-        let user = firebase.auth().currentUser;
-        const userRef = db.collection('users').doc(user?.uid);
-        const doc = await userRef.get();
 
+        this.setState({loading: true});
 
-        // user not signed in, redirect to sign in
-        if (!doc.exists) {
-            console.log('No such user!');
+        // hack around promise context
+        let scope = this;
+        firebase.auth().onAuthStateChanged(async function(user)  {
+            if (user) {
+                const db = firebase.firestore();
+                const userRef = db.collection('users').doc(user?.uid);
+                const doc = await userRef.get();
 
+                let quarters = doc.data()?.quarters;
+        
+                if(quarters) {
+                    quarters = scope.sortTerms(quarters);
+    
+                    scope.setState({quarters: quarters});
+                }
+    
+                else {
+                    scope.setState({quarters: []});
+                }
+    
+                if(scope.state.quarters.length == 0){
+                    scope.setState({welcome: true});
+                }
 
-        } else {
-            console.log('Document data:', doc.data());
-            let quarters = doc.data()?.quarters;
-
-            this.setState({firstName: doc.data()?.firstName});
-
-            if(quarters) {
-                quarters = this.sortTerms(quarters);
-
-                this.setState({quarters: quarters});
+            } else {
+              user = null;
+              // Code to toggle the app state to logged-out view etc.
             }
-
-            else {
-                this.setState({quarters: []});
-            }
-
-            if(this.state.quarters.length == 0){
-                this.setState({welcome: true});
-            }
-
-        }
+          });
 
         this.setState({loading: false});
 

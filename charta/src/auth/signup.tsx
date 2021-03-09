@@ -1,8 +1,6 @@
 import React, {Component} from "react";
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
@@ -34,14 +32,14 @@ interface SignUpState{
 
 
 class SignUp extends Component<SignUpProps, SignUpState> {
-
+  
 
     constructor(props: SignUpProps) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.createAccount = this.createAccount.bind(this);
 
-        this.state = {firstName: '', email: '',  password: '', confirmPassword: '', redirect: false, errorMsg: '', agree: false}
+        this.state = {firstName: '', email: '',  password: '', confirmPassword: '', redirect: false, errorMsg: '', agree: false};
 
     }
 
@@ -52,11 +50,10 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                 // Signed in
                 let user = userCredential.user;
                 const db = firebase.firestore();
-                localStorage.setItem('user', userCredential?.toString())
+                localStorage.setItem('user', 'true')
 
                 await db.collection('users').doc(user?.uid).set({"firstName": this.state.firstName, "email":this.state.email, "quarters": []});
 
-                // user?.uid
                 this.setState({redirect: true})
 
             })
@@ -78,11 +75,6 @@ class SignUp extends Component<SignUpProps, SignUpState> {
             this.setState({errorMsg: "Passwords must match"});
             return;
         }
-
-        // if(!this.state.agree) {
-        //     this.setState({errorMsg: "You must agree to the terms and conditions"});
-        //     return;
-        // }
 
         await this.createAccount();
 

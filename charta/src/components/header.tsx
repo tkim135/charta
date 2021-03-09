@@ -22,21 +22,25 @@ interface HeaderState {
 
 class Header extends Component<HeaderProps, HeaderState>{
 
+
     async componentDidMount() {
 
-        const db = firebase.firestore();
-        let user = firebase.auth().currentUser;
-        const userRef = db.collection('users').doc(user?.uid);
-        const doc = await userRef.get();
+        let scope = this;
+        firebase.auth().onAuthStateChanged(async function(user)  {
+            if (user) {
+                const db = firebase.firestore();
+                const userRef = db.collection('users').doc(user?.uid);
+                const doc = await userRef.get();
+                scope.setState({firstName: doc.data()?.firstName});
 
-        if (!doc.exists) {
-            console.log('No such user!');
-
-        } else {
-            this.setState({firstName: doc.data()?.firstName});
-        }
+            } else {
+              user = null;
+              // Code to toggle the app state to logged-out view etc.
+            }
+          });
 
     }
+
 
 
     constructor(props: HeaderProps) {

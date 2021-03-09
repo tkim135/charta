@@ -35,8 +35,10 @@ interface QuarterState {
     newGrade: string;
     newReason: string;
     totalUnits: number;
-    success: boolean;
+    addCourseSuccess: boolean;
     addCourseFailure: boolean;
+    deleteCourseSuccess: boolean;
+    deleteCourseFailure: boolean;
     shouldDeleteQuarter: boolean
 }
 interface QuarterProps {
@@ -85,16 +87,15 @@ class Quarter extends Component<QuarterProps, QuarterState> {
    }
 
     async componentDidMount() {
-        const db = firebase.firestore();
-        let user = firebase.auth().currentUser;
-        const userRef = db.collection('users').doc(user?.uid);
-        const userData = await userRef.get();
 
-        if (!userData.exists) {
-            console.log('User data could not be found');
-        } else {
-            await this.loadCourses(`users/${user?.uid}/${this.props.name}`);
-        }
+        let scope = this;
+
+        firebase.auth().onAuthStateChanged(async function(user)  {
+            if (user) {
+                await scope.loadCourses(`users/${user?.uid}/${scope.props.name}`);
+
+            }
+        });
 
     }
 
@@ -102,7 +103,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     //TODO: case when multiple course ids
     async findCourse(courseCode: string) {
         const db = firebase.firestore();
-        const coursesRef = await db.collection('classes');
+        const coursesRef = db.collection('classes');
 
         // initialize variables
         let courseId = "-1";
@@ -162,9 +163,11 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                   newUnits: 0,
                  newReason: '',
                 totalUnits: 0,
-                  success: false,
+                addCourseSuccess: false,
                  addCourseFailure: false,
-                 shouldDeleteQuarter: false
+                 shouldDeleteQuarter: false,
+                 deleteCourseFailure: false,
+                 deleteCourseSuccess: false
                     };
 
     }
@@ -221,7 +224,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
             "code": this.state.newCode
         }).then(() => {
             console.log("added course");
-            this.setState({success: true});
+            this.setState({addCourseSuccess: true});
 
             let course = new UserCourse(this.state.newCode, this.state.newReason, this.state.newGrade, this.state.newUnits, this.props.name, courseTitle, courseId)
             let courses = this.state.courses;
@@ -243,20 +246,26 @@ class Quarter extends Component<QuarterProps, QuarterState> {
        const db = firebase.firestore();
        let courseId = this.state.courses[index].id;
        let uid = firebase.auth().currentUser?.uid;
-       let success = false;
 
-       db.collection(`users/${uid}/${this.props.name}`).doc(uid).delete().then(() => {
+
+       db.collection(`users/${uid}/${this.props.name}`).doc(courseId).delete().then(() => {
            console.log("Course successfully deleted!");
-           success = true;
+
+           let courses = this.state.courses;
+           // update total unit count after deletion
+           let newTotalUnits = this.state.totalUnits - courses[index].units;
+           courses.splice(index, 1 );
+           this.setState({courses: courses, deleteCourseSuccess: true,
+                        totalUnits: newTotalUnits});
+
+        
        }).catch((error) => {
            console.error("Error deleting course: ", error);
+           this.setState({deleteCourseFailure: true});
+
        });
 
-       if(success) {
-           let courses = this.state.courses;
-           courses.slice(index, 1 );
-           this.setState({courses: courses});
-       }
+
 
    }
 
@@ -320,7 +329,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                 </AccordionDetails>
 
                 <div>
-                    <Snackbar onClose={() => this.setState({success: false})} open={this.state.success} autoHideDuration={2000}>
+                    <Snackbar onClose={() => this.setState({addCourseSuccess: false})} open={this.state.addCourseSuccess} autoHideDuration={2000}>
                         <MuiAlert severity="success">
                             Class added! 😃
                         </MuiAlert>
@@ -329,6 +338,20 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                     <Snackbar onClose={() => this.setState({addCourseFailure: false})} open={this.state.addCourseFailure} autoHideDuration={2000}>
                         <MuiAlert severity="warning">
                             Sorry... we're not able to add that class with that number of units 🥴
+                        </MuiAlert>
+                    </Snackbar>
+                </div>
+
+                <div>
+                    <Snackbar onClose={() => this.setState({deleteCourseSuccess: false})} open={this.state.deleteCourseSuccess} autoHideDuration={2000}>
+                        <MuiAlert severity="success">
+                            Class deleted! 😃
+                        </MuiAlert>
+                    </Snackbar>
+
+                    <Snackbar onClose={() => this.setState({deleteCourseFailure: false})} open={this.state.deleteCourseFailure} autoHideDuration={2000}>
+                        <MuiAlert severity="warning">
+                            Sorry... something went wrong
                         </MuiAlert>
                     </Snackbar>
                 </div>
@@ -363,7 +386,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             id="name"
                             label="Course Code (e.g., CS 194W)"
                             type="text"
-                            value={this.state.newCode}
+                            value={this.state.newCode} // give current value as default value
                             onChange={(evt) => this.setState({newCode: evt.target.value})}
                             fullWidth
                         />
@@ -376,6 +399,9 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             id="units"
                             label="Units"
                             type="number"
+                            // give current value as default value; this helps the user know
+                            // what the current value is in case the value isn't updated from last time
+                            value={this.state.newUnits != 0 && this.state.newUnits}
                             onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
                             fullWidth
                         />
@@ -386,6 +412,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             id="grade"
                             label="Grade"
                             type="text"
+                            value={this.state.newGrade} // give current value as default value
                             onChange={(evt) => this.setState({newGrade: evt.target.value})}
                             fullWidth
                         />
@@ -397,6 +424,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             id="reason"
                             label="Reason"
                             type="text"
+                            value={this.state.newReason} // give current value as default value
                             onChange={(evt) => this.setState({newReason: evt.target.value})}
                             fullWidth
                         />
