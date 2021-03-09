@@ -5,6 +5,7 @@ import Course from "../data/course";
 import Footer from "./footer";
 import Grid from "@material-ui/core/Grid";
 import Header from "./header";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import firebase from "firebase";
 import "firebase/auth";
@@ -142,49 +143,53 @@ class StudyGroups extends Component<StudyProps, StudyState>{
 					<Header/>
 				</div>
 
-				<Grid container direction="column" spacing={8}>
-				<Grid container spacing={8} direction="row" justify="space-evenly" alignItems="flex-start">
-	
-					<Grid item xs={7}>
-							<p className="intro">Find study partners!</p>
-							<p className="info">{course.title} ({course.codes.join(', ')})</p>
-							<p className="description">{course.description}</p>
+				<div className="studyBody">
+					<Grid container direction="column" spacing={8}>
+					<Grid container spacing={8} direction="row" justify="space-evenly" alignItems="flex-start">
+
+						<Grid item xs={7}>
+								<p className="intro">Find study partners!</p>
+								<p className="info">
+									{this.state.loading ? <CircularProgress/> :
+										course.title + ' (' + course.codes.join(', ') + ')'} </p>
+								<p className="description">{course.description}</p>
+						</Grid>
+
+						<Grid item xs={3}>
+							<img src={"../images/study.png"} alt="Students studying"/>
+						</Grid>
+
 					</Grid>
-					
-					<Grid item xs={3}>
-						<img src={"../images/study.png"} alt="Students studying"/>
+
+					<Grid container spacing={8} direction="row" justify="space-evenly" alignItems="flex-start">
+						<Grid item xs={7}>
+							<p className="intro">Students looking for partners:</p>
+
+							<table style={{marginBottom: "20px"}} className="table">
+							<tr className="label">
+								<th style={{padding: "10px"}}>Name</th>
+								<th>Email</th>
+								</tr>
+								{names.map((student,i) =>(
+								<tr key={i}>
+									<td style={{padding: "10px"}}>
+										{student}
+									</td>
+									<td>{emails[i]}</td>
+								</tr>
+								))}
+							</table>
+							<label className="description">
+						<input type="checkbox" checked={this.state.addedToGroup}
+							onChange={this.handleChange}/>
+							Add me to the list!
+						</label>
+						</Grid>
+						<Grid item xs={3}>
+						</Grid>
 					</Grid>
-
-				</Grid>
-
-				<Grid container spacing={8} direction="row" justify="space-evenly" alignItems="flex-start">
-					<Grid item xs={7}>
-						<p className="intro">Students looking for partners:</p>
-
-      					<table style={{marginBottom: "20px"}} className="table">
-        				<tr className="label">
-            				<th style={{padding: "10px"}}>Name</th>
-            				<th>Email</th>
-          					</tr>
-        			 		{names.map((student,i) =>(
-                   			<tr key={i}>
-              					<td style={{padding: "10px"}}>
-                					{student}
-              					</td>
-              					<td>{emails[i]}</td>
-            				</tr>
-          					))}
-      					</table>
-      					<label className="description">
-            		<input type="checkbox" checked={this.state.addedToGroup}
-            			onChange={this.handleChange}/> 
-            			Add me to the list!
-          			</label>
-      				</Grid>
-      				<Grid item xs={3}>
-      				</Grid>
-    			</Grid>
-    			</Grid>
+					</Grid>
+				</div>
 
 				<Footer/>
 			</div>
