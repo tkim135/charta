@@ -254,8 +254,6 @@ class Quarter extends Component<QuarterProps, QuarterState> {
            let courses = this.state.courses;
            courses.splice(index, 1 );
            this.setState({courses: courses, deleteCourseSuccess: true});
-           console.log('courses');
-           console.log(courses);
 
         
        }).catch((error) => {
