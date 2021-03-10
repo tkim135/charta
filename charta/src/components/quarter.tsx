@@ -209,8 +209,10 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         }
 
         // check if number of units is appropriate
-        if (this.state.newUnits < courseMinUnits
+        if (Number.isNaN(this.state.newUnits)
+            || this.state.newUnits < courseMinUnits
             || this.state.newUnits > courseMaxUnits) {
+                console.log("Wrong number of units!")
                 this.setState({addCourseFailure: true});
                 return;
         }
@@ -394,14 +396,14 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                         <TextField
                             required
                             autoFocus
-                            error={this.state.newUnits < 0 || this.state.newUnits > 10}
+                            error={Number.isNaN(this.state.newUnits) || this.state.newUnits < 0 || this.state.newUnits > 10}
                             margin="dense"
                             id="units"
                             label="Units"
                             type="number"
                             // give current value as default value; this helps the user know
                             // what the current value is in case the value isn't updated from last time
-                            value={this.state.newUnits != 0 && this.state.newUnits}
+                            value={this.state.newUnits}
                             onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
                             fullWidth
                         />
