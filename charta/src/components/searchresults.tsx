@@ -97,6 +97,20 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
     }
 
     async addCourse() {
+        if (this.state.newQuarter == '') {
+            this.setState({invalidQuarter: true});
+            return;
+        }
+        if (this.state.newCode == '') {
+            this.setState({invalidCode: true});
+            return;
+        }
+        if (Number.isNaN(this.state.newUnits)
+            || this.state.newUnits < this.props.course.minUnits
+            || this.state.newUnits > this.props.course.maxUnits) {
+                this.setState({invalidUnits: true});
+                return;
+        }
         let scope = this;
         firebase.auth().onAuthStateChanged(async function(user)  {
             if (user) {
@@ -121,12 +135,17 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                 }).catch((err) => {
                     console.log("error loading courses", err);
                 });
-                console.log(quarterCourses);
+                let quarterCourseIds = quarterCourses.map(course => course.id);
+                if (quarterCourseIds.includes(scope.props.course.id)) {
+                    scope.setState({courseAlreadyAdded: true});
+                    return;
+                }
 
                 let uid = firebase.auth().currentUser?.uid;
             } else {
               user = null;
             }
+            scope.closeDialog();
         });
     }
 
@@ -257,6 +276,11 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                     Sorry... there are no available quarters in your planner where you can add the course
                 </MuiAlert>
             </Snackbar>
+            <Snackbar onClose={() => this.setState({courseAlreadyAdded: false})} open={this.state.courseAlreadyAdded} autoHideDuration={2000}>
+                <MuiAlert severity="warning">
+                    Sorry... the course already exists in that quarter!
+                </MuiAlert>
+            </Snackbar>
             <Snackbar onClose={() => this.setState({invalidQuarter: false})} open={this.state.invalidQuarter} autoHideDuration={2000}>
                 <MuiAlert severity="warning">
                     Sorry... please specify a valid quarter
@@ -265,6 +289,11 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
             <Snackbar onClose={() => this.setState({invalidCode: false})} open={this.state.invalidCode} autoHideDuration={2000}>
                 <MuiAlert severity="warning">
                     Sorry... please specify a valid course code
+                </MuiAlert>
+            </Snackbar>
+            <Snackbar onClose={() => this.setState({invalidUnits: false})} open={this.state.invalidUnits} autoHideDuration={2000}>
+                <MuiAlert severity="warning">
+                    Sorry... please specify a valid number of units
                 </MuiAlert>
             </Snackbar>
         </Card>

@@ -212,7 +212,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
         if (Number.isNaN(this.state.newUnits)
             || this.state.newUnits < courseMinUnits
             || this.state.newUnits > courseMaxUnits) {
-                console.log("UNITS SCREWED")
+                console.log("Wrong number of units!")
                 this.setState({addCourseFailure: true});
                 return;
         }
