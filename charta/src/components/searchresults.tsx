@@ -163,9 +163,110 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
 
             <CardActions>
                     <Button size="small" ><Link to={'/studygroups/' + course.id }>Find study groups</Link></Button>
-                    <Button size="small">Add to academic plan <AddCircleIcon/></Button>
+                    <Button size="small" onClick={() => this.openDialog()}>Add to academic plan <AddCircleIcon/></Button>
                     <Button size="small">Find similar classes</Button>
             </CardActions>
+            {(this.state.availableQuartersToTake.length > 0) && <Dialog open={this.state.addingCourse}>
+                <DialogTitle>Add course to academic plan</DialogTitle>
+                <DialogContent>
+                    <b>{course.title} ({course.codes.join(', ')})</b>
+                    <TextField
+                        autoFocus
+                        required
+                        select
+                        error={!course.codes.includes(this.state.newCode)}
+                        margin="dense"
+                        id="name"
+                        label="Select code to add"
+                        type="text"
+                        value={this.state.newCode}
+                        onChange={(evt) => this.setState({newCode: evt.target.value})}
+                        fullWidth
+                    >
+                        {course.codes.map((option) => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        autoFocus
+                        required
+                        select
+                        error={!this.state.availableQuartersToTake.includes(this.state.newQuarter)}
+                        margin="dense"
+                        id="name"
+                        label="Select quarter to add to"
+                        type="text"
+                        value={this.state.newQuarter}
+                        onChange={(evt) => this.setState({newQuarter: evt.target.value})}
+                        fullWidth
+                    >
+                        {this.state.availableQuartersToTake.map((option) => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                            required
+                            autoFocus
+                            error={Number.isNaN(this.state.newUnits) || this.state.newUnits < 0 || this.state.newUnits > 10}
+                            margin="dense"
+                            id="units"
+                            label="Units"
+                            type="number"
+                            // give current value as default value; this helps the user know
+                            // what the current value is in case the value isn't updated from last time
+                            value={this.state.newUnits}
+                            onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
+                            fullWidth
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="grade"
+                        label="Grade"
+                        type="text"
+                        value={this.state.newGrade} // give current value as default value
+                        onChange={(evt) => this.setState({newGrade: evt.target.value})}
+                        fullWidth
+                    />
+
+
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="reason"
+                        label="Reason"
+                        type="text"
+                        value={this.state.newReason} // give current value as default value
+                        onChange={(evt) => this.setState({newReason: evt.target.value})}
+                        fullWidth
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => this.closeDialog()} color="primary" className="cancelButton">
+                        Cancel
+                    </Button>
+
+                    <Button onClick={() => this.addCourse()} color="primary">
+                        Add
+                    </Button>
+                </DialogActions>
+            </Dialog>}
+            <Snackbar onClose={() => this.setState({noAvailableQuarter: false})}
+            open={this.state.noAvailableQuarter} autoHideDuration={2000}>
+                <MuiAlert severity="warning">
+                    Sorry... there are no available quarters in your planner where you can add the course
+                </MuiAlert>
+            </Snackbar>
+            <Snackbar onClose={() => this.setState({invalidQuarter: false})} open={this.state.invalidQuarter} autoHideDuration={2000}>
+                <MuiAlert severity="warning">
+                    Sorry... please specify a valid quarter
+                </MuiAlert>
+            </Snackbar>
+            <Snackbar onClose={() => this.setState({invalidCode: false})} open={this.state.invalidCode} autoHideDuration={2000}>
+                <MuiAlert severity="warning">
+                    Sorry... please specify a valid course code
+                </MuiAlert>
+            </Snackbar>
         </Card>
         );
     }
