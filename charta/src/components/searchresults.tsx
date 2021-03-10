@@ -49,6 +49,8 @@ interface CourseCardState {
     invalidUnits: boolean;
     invalidCode: boolean;
     invalidQuarter: boolean;
+    addCourseSuccess: boolean;
+    addCourseFailure: boolean;
 }
 
 interface CourseCardProps {
@@ -64,7 +66,8 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
         this.state = {addingCourse: false, newCode: '', newQuarter: '',
             noAvailableQuarter: false, availableQuartersToTake: [], newUnits: 0,
             newGrade: '', newReason: '', courseAlreadyAdded: false,
-            invalidUnits: false, invalidCode: false, invalidQuarter: false};
+            invalidUnits: false, invalidCode: false, invalidQuarter: false,
+            addCourseSuccess: false, addCourseFailure: false};
     }
 
     async openDialog() {
@@ -128,20 +131,37 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                         // let course = await this.loadCourse(doc);
                         let courseData = doc.data();
                         if(courseData?.ignore) return
-                        let course = new UserCourse(courseData?.code, courseData?.reason, courseData?.grade, courseData?.units, scope.state.newQuarter, courseData?.title, doc.id);
+                        let course = new UserCourse(courseData?.code, courseData?.reason,
+                            courseData?.grade, courseData?.units, scope.state.newQuarter, courseData?.title, doc.id);
                         quarterCourses.push(course);
                         console.log(course);
                     })
                 }).catch((err) => {
                     console.log("error loading courses", err);
                 });
+                // check if requested quarter already contains course
                 let quarterCourseIds = quarterCourses.map(course => course.id);
                 if (quarterCourseIds.includes(scope.props.course.id)) {
                     scope.setState({courseAlreadyAdded: true});
                     return;
                 }
-
-                let uid = firebase.auth().currentUser?.uid;
+                // now add to database if all of these safety checks pass
+                db.collection(`users/${user?.uid}/${scope.state.newQuarter}`)
+                    .doc(scope.props.course.id).set({
+                    "units": scope.state.newUnits,
+                    "grade": scope.state.newGrade,
+                    "reason": scope.state.newReason,
+                    "id": scope.props.course.id,
+                    "title": scope.props.course.title,
+                    "code": scope.state.newCode
+                }).then(() => {
+                    console.log("added course");
+                    scope.setState({addCourseSuccess: true});
+                }).catch((error) => {
+                    console.log(error.code, error.message);
+                    scope.setState({addCourseFailure: true});
+                    return;
+                });
             } else {
               user = null;
             }
@@ -294,6 +314,19 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
             <Snackbar onClose={() => this.setState({invalidUnits: false})} open={this.state.invalidUnits} autoHideDuration={2000}>
                 <MuiAlert severity="warning">
                     Sorry... please specify a valid number of units
+                </MuiAlert>
+            </Snackbar>
+
+            {/* when class added successfully */}
+            <Snackbar onClose={() => this.setState({addCourseSuccess: false})} open={this.state.addCourseSuccess} autoHideDuration={2000}>
+                <MuiAlert severity="success">
+                    Class added! 😃
+                </MuiAlert>
+            </Snackbar>
+            {/* general error case of failure beyond the safety checks above */}
+            <Snackbar onClose={() => this.setState({addCourseFailure: false})} open={this.state.addCourseFailure} autoHideDuration={2000}>
+                <MuiAlert severity="warning">
+                    Sorry... something went wrong 🥴
                 </MuiAlert>
             </Snackbar>
         </Card>
