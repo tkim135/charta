@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -10,6 +9,7 @@ import Box from '@material-ui/core/Box';
 import SettingsIcon from '@material-ui/icons/Settings';
 import grey from '@material-ui/core/colors/grey';
 import SearchBar from "./searchbar";
+import logo from "../images/circle194logo.png"
 
 interface HeaderProps {
 
@@ -60,13 +60,14 @@ class Header extends Component<HeaderProps, HeaderState>{
     }
 
     render(){
+
        return (
         <header className="header">
           <AppBar position="static">
             <Toolbar>
-
                 <Box display='flex' flexGrow={1}>
-                    <IconButton edge="start"  color="inherit" aria-label="menu">  </IconButton>
+                       <img alt="Charta logo" src={logo} width="50" />
+ 
                     <Button><h1 id="title"><Link to="/home">Charta</Link> </h1></Button>
 
                     <SearchBar/>
