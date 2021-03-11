@@ -189,7 +189,7 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                 <br/>
 
                 GER: {course.GER[0] ? course.GER.map((GER: string, i: number) => {
-                    return <Chip color="primary" label={GER} key={i}/>
+                    return <Chip color="primary" label={GER} key={i} style={{margin: "2px"}}/>
                 }) : <span>None</span> }
 
 
@@ -209,7 +209,7 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                             <AccordionDetails>
                                 <Container>
                                         {course.terms.map((Term: string, i: number) => {
-                                        return <Chip color="primary" label={Term} key={i} style={{margin: "5px"}}/>
+                                        return <Chip color="primary" label={Term} key={i} style={{margin: "2px"}}/>
                                     }) }
 
                                 </Container>
