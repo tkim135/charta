@@ -55,7 +55,6 @@ class Quarter extends Component<QuarterProps, QuarterState> {
     // load the courses for this quarter
    async loadCourses(path: string) {
        const db = firebase.firestore();
-       console.log("loading course data");
 
        // let courses: Array<UserCourse> = [];
        let totalUnits = 0;
@@ -288,6 +287,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
 
 
+
+
     render() {
 
         return (
@@ -303,8 +304,6 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
                         <h1 id="quarter-title" style={{display: "inline"}}><strong>{this.props.name}</strong></h1>
                                                    
-
-                       
 
 
                 </AccordionSummary>
@@ -355,8 +354,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
 
                 </AccordionDetails>
-                
-
+            
                 
           
 

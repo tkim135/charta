@@ -149,6 +149,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
         this.sortTerms = this.sortTerms.bind(this);
         this.removeItem = this.removeItem.bind(this);
         this.deleteQuarter = this.deleteQuarter.bind(this);
+        this.deleteCollection = this.deleteCollection.bind(this);
 
     }
 
@@ -160,6 +161,31 @@ class Planner extends Component<PlannerProps, PlannerState> {
         }
         return arr
     }
+
+
+
+    deleteCollection(path: string) {
+        const db = firebase.firestore();
+        let success = true;
+
+        db.collection(path).get().then( (querySnapshot) => { 
+            let courses: any = [];
+             querySnapshot.forEach((doc) =>  {
+                 courses.push(doc.id);
+                
+            })
+
+            courses.forEach((course: string) =>{
+                db.collection(path).doc(course).delete().then((res) => console.log('delete course', course));
+            });
+            
+
+
+        }).catch((err) => console.log(err))
+
+        return success;
+
+   }
 
     //TODO: delete quarter collection (each user has field which is an array of quarter strings, but also a collection for each quarter)
     async deleteQuarter(quarter: string) {
@@ -173,11 +199,12 @@ class Planner extends Component<PlannerProps, PlannerState> {
         }
 
         try {
-            console.log('Document data:', doc.data());
             let quarters = doc.data()?.quarters;
             let index = quarters.indexOf(quarter);
             if (index !== -1) quarters.splice(index, 1);
             await db.collection("users").doc(uid).update({quarters: quarters});
+            let success = this.deleteCollection(`users/${uid}/${quarter}`);
+            if(!success) this.setState({deleteQuarterFailure: true})
             this.setState({quarters: quarters})
             this.setState({deleteQuarterSuccess: true})
         }
