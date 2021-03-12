@@ -46,9 +46,10 @@ interface PlannerProps {
 
 class Planner extends Component<PlannerProps, PlannerState> {
 
-
-
-    sortTerms(terms: Array<string>) {
+    // this term-sorting function is different from that in data/course.tsx
+    // the format of quarters in planner is different so function was adjusted accordingly
+    // data/course.tsx has format "2020-2021 Winter" whereas planner has "Winter 2021"
+    sortPlannerTerms(terms: Array<string>) {
         let sortedArray: string[] = terms.sort((n1,n2) => {
             if (n1.substring(n1.length-4) > n2.substring(n2.length-4)) {
                 return 1;
@@ -122,7 +123,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 let quarters = doc.data()?.quarters;
         
                 if(quarters) {
-                    quarters = scope.sortTerms(quarters);
+                    quarters = scope.sortPlannerTerms(quarters);
     
                     scope.setState({quarters: quarters});
                 }
@@ -161,7 +162,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                         firstName: ""};
 
         this.addQuarter = this.addQuarter.bind(this);
-        this.sortTerms = this.sortTerms.bind(this);
+        this.sortPlannerTerms = this.sortPlannerTerms.bind(this);
         this.removeItem = this.removeItem.bind(this);
         this.deleteQuarter = this.deleteQuarter.bind(this);
         this.deleteCollection = this.deleteCollection.bind(this);
@@ -251,7 +252,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
         }
         quarters.push(quarter);
 
-        quarters = this.sortTerms(quarters);
+        quarters = this.sortPlannerTerms(quarters);
 
 
         this.setState({quarters: quarters});
