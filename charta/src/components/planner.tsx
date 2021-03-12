@@ -48,41 +48,56 @@ class Planner extends Component<PlannerProps, PlannerState> {
 
 
 
-    // TODO: fix duplicated code
-    // this was copied from course.tsx, I did not want to change that code and risk breaking before demo
     sortTerms(terms: Array<string>) {
         let sortedArray: string[] = terms.sort((n1,n2) => {
-            if (n1.substring(0,9) > n2.substring(0,9)) {
+            if (n1.substring(n1.length-4) > n2.substring(n2.length-4)) {
+                return 1;
+            }
+            if (n1.substring(n1.length-4) < n2.substring(n2.length-4)) {
+                return -1;
+            }
+            // if years are equal, compare "Fall", "Winter", "Spring", or "Summer"
+            // order should be Winter, Spring, Summer, Fall
+
+            if (n1.substring(0, n1.length-5) === "Winter" && n2.substring(0, n2.length-5) === "Spring") {
+                return -1;
+            }
+            if (n2.substring(0, n2.length-5) === "Winter" && n1.substring(0, n1.length-5) === "Spring") {
                 return 1;
             }
 
-            if (n1.substring(0,9) < n2.substring(0,9)) {
+            if (n1.substring(0, n1.length-5) === "Winter" && n2.substring(0, n2.length-5) === "Summer") {
                 return -1;
             }
-            // if years are equal, compare "Autumn", "Winter", or "Spring"
-            // winter and spring are exceptions to alphabetical rule
-            // otherwise, alphabetical comparisons work
-            if (n1.substring(10) === "Winter" && n2.substring(10) === "Spring") {
-                return -1;
-            }
-            if (n2.substring(10) === "Winter" && n1.substring(10) === "Spring") {
+            if (n2.substring(0, n2.length-5) === "Winter" && n1.substring(0, n1.length-5) === "Summer") {
                 return 1;
             }
 
-            // actually, so are winter and summer
-            if (n1.substring(10) === "Winter" && n2.substring(10) === "Summer") {
+            if (n1.substring(0, n1.length-5) === "Winter" && n2.substring(0, n2.length-5) === "Fall") {
                 return -1;
             }
-            if (n2.substring(10) === "Winter" && n1.substring(10) === "Summer") {
+            if (n2.substring(0, n2.length-5) === "Winter" && n1.substring(0, n1.length-5) === "Fall") {
                 return 1;
             }
 
-            // alphabetical
-            if (n1.substring(10) < n2.substring(10)) {
+            if (n1.substring(0, n1.length-5) === "Spring" && n2.substring(0, n2.length-5) === "Summer") {
                 return -1;
             }
+            if (n2.substring(0, n2.length-5) === "Spring" && n1.substring(0, n1.length-5) === "Summer") {
+                return 1;
+            }
 
-            if (n1.substring(10) > n2.substring(10)) {
+            if (n1.substring(0, n1.length-5) === "Spring" && n2.substring(0, n2.length-5) === "Fall") {
+                return -1;
+            }
+            if (n2.substring(0, n2.length-5) === "Spring" && n1.substring(0, n1.length-5) === "Fall") {
+                return 1;
+            }
+
+            if (n1.substring(0, n1.length-5) === "Summer" && n2.substring(0, n2.length-5) === "Fall") {
+                return -1;
+            }
+            if (n2.substring(0, n2.length-5) === "Summer" && n1.substring(0, n1.length-5) === "Fall") {
                 return 1;
             }
 
