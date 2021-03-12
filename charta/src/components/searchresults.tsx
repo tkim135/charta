@@ -25,6 +25,11 @@ import MuiAlert from '@material-ui/lab/Alert';
 import UserCourse from '../data/usercourse';
 import {Link} from 'react-router-dom';
 import { MenuItem } from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 
 interface SearchResultState {
     course: Course,
@@ -184,19 +189,37 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                 <br/>
 
                 GER: {course.GER[0] ? course.GER.map((GER: string, i: number) => {
-                    return <Chip color="primary" label={GER} key={i}/>
+                    return <Chip color="primary" label={GER} key={i} style={{margin: "2px"}}/>
                 }) : <span>None</span> }
 
+
                 <br/>
+            
+                Grading: {course.gradingBasis}
 
-                {course.terms.map((term: string, i: number) => {
-                    // change background color to be less harsh for the eye
-                    return <Chip color="secondary" style={{backgroundColor:'#ba5a00'}}
-                            label={term} key={i}/>
-                }) }
 
-                <Chip label={course.gradingBasis}/>
+        
+                        <Accordion>
+                            <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="panel1a-content"
+                            id="panel1a-header"
+                            > <h1>Terms Offered</h1>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Container>
+                                        {course.terms.map((Term: string, i: number) => {
+                                        return <Chip color="primary" label={Term} key={i} style={{margin: "2px"}}/>
+                                    }) }
 
+                                </Container>
+
+                            
+        
+
+                            </AccordionDetails>
+                        </Accordion>
+                  
 
             </CardContent>
 
