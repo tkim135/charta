@@ -162,8 +162,7 @@ class Settings extends Component<SettingsProps, SettingsState> {
                             aria-label="Vertical tabs example"
                         >
                             <Tab label="Account" {...a11yProps(0)} />
-                            <Tab label="Settings" {...a11yProps(1)} />
-                            <Tab label="About" {...a11yProps(2)} />
+                            <Tab label="About" {...a11yProps(1)} />
                         </Tabs>
                         <TabPanel value={this.state.value} index={0}>
                             <div>
@@ -237,14 +236,8 @@ class Settings extends Component<SettingsProps, SettingsState> {
 
                             </div>
                         </TabPanel>
+    
                         <TabPanel value={this.state.value} index={1}>
-                            <div>
-                                <h1>Settings</h1>
-
-
-                            </div>
-                        </TabPanel>
-                        <TabPanel value={this.state.value} index={2}>
                             <div>
                                 <h1>About</h1>
                                 <p>Charta is the work of some computer science students making it easier to graduate.</p>
