@@ -16,6 +16,7 @@ import Settings from './account/settings';
 import StudyGroups from './components/study';
 import SearchResults from './components/searchresults';
 import RecommenderPage from './components/recommenderpage'
+import NotFound from './components/notfound';
 import 'firebase';
 
 class App extends Component {
@@ -32,6 +33,7 @@ class App extends Component {
                     <Route path='/recs' component={RecommenderPage}/>
                     <Route path="/search/:courseId" component={SearchResults} />
                     <Route exact path="/studygroups/:courseId" component={StudyGroups} />
+                    <Route path="/*" component={NotFound} />
                 </Switch>
 
             </Router>
