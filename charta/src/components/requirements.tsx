@@ -136,10 +136,13 @@ class Requirements extends Component<RequirementsProps, RequirementsState> {
         for (var i = 0; i < courses.length; i++) {
             //only if GER in reqs, and only first GER still needed::
             let reqs = courses[i].GER;
+            var specifiedWays = (this.state.courseWays[courses[i].id])
             for (var j = 0; j < reqs.length; j++) {
                 //make sure to select specified ways by user:
-                if(stillNeeded[reqs[j]] > 0 && (reqs[j] === this.state.courseWays[courses[i].id]
-                || reqs[j] === "THINK" || reqs[j] === "Writing 1" || reqs[j] === "Writing 2")) { 
+                
+                if(stillNeeded[reqs[j]] > 0 && 
+                (reqs[j] === specifiedWays || specifiedWays === "" ||
+                reqs[j] === "THINK" || reqs[j] === "Writing 1" || reqs[j] === "Writing 2")) { 
                     stillNeeded[reqs[j]] -= this.state.courseUnits[courses[i].id];
                     if (reqs[j] !== "THINK") break; //think can fulfill ways req too, always listed first
                 }
