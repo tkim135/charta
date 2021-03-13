@@ -20,6 +20,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 
 
@@ -90,7 +92,9 @@ interface RecommenderPageState {
     checkedTerms: Array<boolean>,
 
     startOfResults: number, 
-    numResults: number
+    numResults: number,
+
+    invalidParams: boolean
 }
 
 class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageState>{
@@ -122,7 +126,9 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
             checkedUnits: _checkedUnits.fill(false), 
 
             startOfResults: 0,
-            numResults: 5
+            numResults: 5,
+            
+            invalidParams: false 
         }; 
         this.renderCourseCard = this.renderCourseCard.bind(this)
     }
@@ -207,9 +213,11 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
     }
 
     async handleGenerateRecommendations() {
-        if (this.state.gers == [] && this.state.units == [] && this.state.terms == [] && this.state.keywords == '') {
-            console.log("no parameters!")
+        console.log(this.state.gers, this.state.units, this.state.terms, this.state.keywords)
+        if (this.state.gers.length === 0 && this.state.units.length === 0 && this.state.terms.length === 0 && this.state.keywords === '') {
             // add an alert
+            this.setState({invalidParams: true})
+            console.log("no parameters!")
         } else {
             let query: any = {}
             if (this.state.gers.length > 0) {
@@ -641,10 +649,16 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                         </div> 
 
                     </div>
-                    {this.state.gers}
+                    <div>
+                    <Snackbar onClose={() => this.setState({invalidParams: false})}
+                        open={this.state.invalidParams} autoHideDuration={2000}>
+                        <MuiAlert severity="warning">
+                            Please enter some keywords, GERS, terms or units.
+                        </MuiAlert>
+                    </Snackbar>
+                    </div>
 
                 </div>
-                {console.log(this.state.checkedReqs)}
                 <Footer/>
             </div>
         );
