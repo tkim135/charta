@@ -54,11 +54,11 @@ class Home extends Component<HomeProps, HomeState>{
                     
                     <Header/>
                     <Grid container>
-                        <Grid item xs={3} md={3}>
+                        <Grid item xs={3} md={2}>
                             <Recommendation/>
 
                         </Grid>
-                        <Grid item xs={9} md={9}>
+                        <Grid item xs={9} md={10}>
                             <Planner/>
                         </Grid>
                     </Grid>

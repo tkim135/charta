@@ -37,7 +37,6 @@ class Signin extends Component<SigninProps, SigninState> {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {email: '',  password: '', redirect: false, failed: false, errorMsg: '', uid: ""}
-        this.handleEmailReset = this.handleEmailReset.bind(this);
 
     }
 
@@ -64,10 +63,6 @@ class Signin extends Component<SigninProps, SigninState> {
 
 
     handleClose() {
-
-    }
-
-    handleEmailReset() {
 
     }
 
@@ -124,10 +119,10 @@ class Signin extends Component<SigninProps, SigninState> {
                                     </InputAdornment>
                                 )}}
                         />
-                        <FormControlLabel
+                        {/* <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
-                        />
+                        /> */}
                         <p>{this.state.errorMsg}</p>
 
                         <Button
@@ -140,13 +135,7 @@ class Signin extends Component<SigninProps, SigninState> {
                             <strong>Sign In</strong>
                         </Button>
                         <Grid container>
-                            <Grid item xs>
-                                <p onClick={this.handleEmailReset}>
-                                    Forgot password?
-                                </p>
-                            </Grid>
-
-
+                          
                             <Grid item>
                                 <Link to="/signup">
                                     {"Don't have an account? Sign Up"}
