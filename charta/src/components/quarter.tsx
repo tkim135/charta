@@ -25,7 +25,6 @@ import MuiAlert from '@material-ui/lab/Alert';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import AccordionActions from '@material-ui/core/AccordionActions';
 
 interface QuarterState {
     addCourse: boolean;
@@ -63,7 +62,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
        // iterate over courses in this quarter
        db.collection(path).get().then( (querySnapshot) => {
-           console.log(path);
+           console.log('load courses', path);
 
             // get the course
             querySnapshot.forEach((doc) =>  {

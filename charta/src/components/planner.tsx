@@ -303,20 +303,20 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 <Grid container spacing={3}>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 0){return <Quarter deleteQuarter={this.deleteQuarter} name={this.state.quarters[i]} key={i}/>}
+                            if(i % 3 === 0){return <Quarter deleteQuarter={this.deleteQuarter} name={quarter} key={quarter}/>}
                             else {return <span/>}
                         }) : ''}
 
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 1){return <Quarter deleteQuarter={this.deleteQuarter} name={this.state.quarters[i]} key={i}/>}
+                            if(i % 3 === 1){return <Quarter deleteQuarter={this.deleteQuarter} name={quarter} key={quarter}/>}
                             else {return <span/>}
                         }) : ''}
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.quarters.length > 0 ? this.state.quarters.map((quarter: string, i: number) => {
-                            if(i % 3 === 2){return <Quarter deleteQuarter={this.deleteQuarter} name={this.state.quarters[i]} key={i}/>}
+                            if(i % 3 === 2){return <Quarter deleteQuarter={this.deleteQuarter} name={quarter} key={quarter}/>}
                             else {return <span/>}
                         }) : ''}
                     </Grid>
