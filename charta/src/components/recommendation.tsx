@@ -1,6 +1,5 @@
 import {Component} from "react";
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom'
@@ -30,13 +29,12 @@ class Recommendation extends Component<RecommendationProps , RecommendationState
     render() {
         return (
             <Container>
-                <Card>
-                   <CardContent>
-                       <Link to={'/recs'}>
-                       <Button>Generate recommendations</Button>
-                       </Link>
-                   </CardContent>
-                </Card>
+                      <Tooltip title="We'll suggest courses based on our algorithm.">
+                        <Link to={'/recs'}>
+                        <Button>Generate recommendations</Button>
+                        </Link>
+                       </Tooltip>
+
             </Container>
         )
 

@@ -126,6 +126,15 @@ class Settings extends Component<SettingsProps, SettingsState> {
                 scope.setState({errorMsg: err.message});
             });
         }
+        await userRef.update({
+            email: this.state.email
+        }).then(() => {
+            success = true;
+        }).catch((err) => {
+            console.log(err.code, err.message);
+            failure = true;
+            this.setState({errorMsg: err.message});
+        });
 
 
         this.setState({success: success, failure: failure});

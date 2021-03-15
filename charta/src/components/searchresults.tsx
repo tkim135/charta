@@ -48,11 +48,13 @@ interface CourseCardState {
     newQuarter: string;
     availableQuartersToTake: Array<string>;
     newUnits: number;
+    newWays: string;
     newGrade: string;
     newReason: string;
     courseAlreadyAdded: boolean;
     invalidUnits: boolean;
     invalidCode: boolean;
+    invalidWays: boolean;
     invalidQuarter: boolean;
     addCourseSuccess: boolean;
     addCourseFailure: boolean;
@@ -70,8 +72,8 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
         super(props);
         this.state = {addingCourse: false, newCode: '', newQuarter: '',
             noAvailableQuarter: false, availableQuartersToTake: [], newUnits: 0,
-            newGrade: '', newReason: '', courseAlreadyAdded: false,
-            invalidUnits: false, invalidCode: false, invalidQuarter: false,
+            newGrade: '', newReason: '', newWays: '', courseAlreadyAdded: false,
+            invalidUnits: false, invalidCode: false, invalidQuarter: false, invalidWays: false,
             addCourseSuccess: false, addCourseFailure: false};
     }
 
@@ -119,6 +121,13 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                 this.setState({invalidUnits: true});
                 return;
         }
+
+        if ((this.state.newWays) !== "" && !(this.props.course.GER.indexOf(this.state.newWays) > -1)) {
+            console.log("Class can't fulfill inputted WAYS!");
+            this.setState({invalidWays: true});
+            return;
+        }
+
         let scope = this;
         firebase.auth().onAuthStateChanged(async function(user)  {
             if (user) {
@@ -137,7 +146,7 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                         let courseData = doc.data();
                         if(courseData?.ignore) return
                         let course = new UserCourse(courseData?.code, courseData?.reason,
-                            courseData?.grade, courseData?.units, scope.state.newQuarter, courseData?.title, doc.id);
+                            courseData?.grade, courseData?.units, courseData?.ways, scope.state.newQuarter, courseData?.title, doc.id);
                         quarterCourses.push(course);
                         console.log(course);
                     })
@@ -156,6 +165,7 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                     "units": scope.state.newUnits,
                     "grade": scope.state.newGrade,
                     "reason": scope.state.newReason,
+                    "ways": scope.state.newWays,
                     "id": scope.props.course.id,
                     "title": scope.props.course.title,
                     "code": scope.state.newCode
@@ -280,28 +290,18 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                             onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
                             fullWidth
                     />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="grade"
-                        label="Grade"
-                        type="text"
-                        value={this.state.newGrade} // give current value as default value
-                        onChange={(evt) => this.setState({newGrade: evt.target.value})}
-                        fullWidth
-                    />
-
 
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="reason"
-                        label="Reason"
+                        id="ways"
+                        label="WAYS Fulfilling (e.g., WAY-SI)"
                         type="text"
-                        value={this.state.newReason} // give current value as default value
-                        onChange={(evt) => this.setState({newReason: evt.target.value})}
+                        value={this.state.newWays} // give current value as default value
+                        onChange={(evt) => this.setState({newWays: evt.target.value})}
                         fullWidth
                     />
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => this.closeDialog()} color="primary" className="cancelButton">
@@ -337,6 +337,11 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
             <Snackbar onClose={() => this.setState({invalidUnits: false})} open={this.state.invalidUnits} autoHideDuration={2000}>
                 <MuiAlert severity="warning">
                     Sorry... please specify a valid number of units
+                </MuiAlert>
+            </Snackbar>
+            <Snackbar onClose={() => this.setState({invalidWays: false})} open={this.state.invalidWays} autoHideDuration={2000}>
+                <MuiAlert severity="warning">
+                    Sorry... please specify a valid ways to fulfill
                 </MuiAlert>
             </Snackbar>
 
