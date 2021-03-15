@@ -4,7 +4,7 @@ import firebase from "firebase";
 import 'firebase/firestore';
 import '../firebase';
 import Course from "../data/course";
-import Header2 from "./header2";
+import Header from "./header";
 import Footer from "./footer";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -60,11 +60,6 @@ class CourseCard extends Component<CourseCardProps>{
                 <Chip label={course.gradingBasis}/>
             </CardContent>
 
-            <CardActions>
-                    <Button size="small">Find study groups</Button>
-                    <Button size="small">Add to academic plan <AddCircleIcon/></Button>
-                    <Button size="small">Find similar classes</Button>
-            </CardActions>
         </Card>
         );
     }
@@ -94,7 +89,8 @@ interface RecommenderPageState {
     startOfResults: number, 
     numResults: number,
 
-    invalidParams: boolean
+    invalidParams: boolean,
+    shouldRefresh: boolean
 }
 
 class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageState>{
@@ -128,7 +124,8 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
             startOfResults: 0,
             numResults: 5,
             
-            invalidParams: false 
+            invalidParams: false,
+            shouldRefresh: true
         }; 
         this.renderCourseCard = this.renderCourseCard.bind(this)
     }
@@ -221,10 +218,10 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
         } else {
             let query: any = {}
             if (this.state.gers.length > 0) {
-                query["reqs"] = this.state.gers.join()
+                query["reqs"] = this.state.gers
             } 
             if (this.state.units.length > 0) { 
-                query["units"] = this.state.units.join()
+                query["units"] = this.state.units
             }
             if (this.state.keywords.length > 0) {
                 console.log("keywords: ", this.state.keywords)
@@ -234,39 +231,60 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
             if (this.state.terms.length > 0) {
                 query["terms"] = this.state.terms.join() 
             }
+            query["start"] = this.state.startOfResults
+            query["numResults"] = this.state.numResults
+
             var generateRecommendations = firebase.functions().httpsCallable('recommendation')
 
             this.setState({loading: true, recommendations: []})
+            // if (this.state.shouldRefresh === true) {
+            //     this.setState({recommendations: []})
+            // }
+      
             let res = await generateRecommendations(query)
             
             res.data.forEach((courseElements: any) => {
-                const course = new Course(
-                    courseElements['id'],
-                    courseElements["Codes"],
-                    courseElements["Description"],
-                    courseElements["GER"],
-                    courseElements["Grading Basis"],
-                    courseElements["Min Units"],
-                    courseElements["Max Units"],
-                    [],
-                    courseElements["Terms"],
-                    courseElements["Title"]
+                console.log(courseElements)
+                if (courseElements != null){
+                    const course = new Course(
+                        courseElements['id'],
+                        courseElements["Codes"],
+                        courseElements["Description"],
+                        courseElements["GER"],
+                        courseElements["Grading Basis"],
+                        courseElements["Min Units"],
+                        courseElements["Max Units"],
+                        [],
+                        courseElements["Terms"],
+                        courseElements["Title"]
 
-                );
-                
-                this.state.recommendations.push(course)
+                    );
+                    
+                    this.state.recommendations.push(course)
+                }
             });
             // var finalRecommendations = this.state.recommendations
             // finalRecommendations.shift()
-            this.setState({shouldShowRecs: true, loading: false, startOfResults: 0})
+            this.setState({shouldShowRecs: true, loading: false})
+            if (this.state.shouldRefresh === true){
+                this.setState({startOfResults: 0})
+            }
             console.log("keywords: ", this.state.keywords)
 
             console.log(this.state.recommendations)
         }
     }
 
-    handleShowMore() {
+    handleResendQuery() {
+
+    }
+
+    async handleShowMore() {
         this.setState({startOfResults: this.state.startOfResults + this.state.numResults})
+        if (this.state.startOfResults >= this.state.recommendations.length){
+           this.setState({shouldRefresh: false})
+           await this.handleGenerateRecommendations()
+        }
         console.log(this.state.startOfResults)
     }
     
@@ -281,7 +299,7 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
     render() {
         return (
             <div className="flex flex-col h-screen justify-between mainContent">
-                <Header2/>
+                <Header/>
                 <div className="contentDiv">
                     <div className="searchBarDiv">
                         <TextField
@@ -648,6 +666,7 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                             </div> : null}
                         </div> 
 
+
                     </div>
                     <div>
                     <Snackbar onClose={() => this.setState({invalidParams: false})}
@@ -657,7 +676,6 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                         </MuiAlert>
                     </Snackbar>
                     </div>
-
                 </div>
                 <Footer/>
             </div>
