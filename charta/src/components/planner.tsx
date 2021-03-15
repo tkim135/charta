@@ -47,43 +47,59 @@ interface PlannerProps {
 
 class Planner extends Component<PlannerProps, PlannerState> {
 
-
-
-    // TODO: fix duplicated code
-    // this was copied from course.tsx, I did not want to change that code and risk breaking before demo
-    sortTerms(terms: Array<string>) {
+    // this term-sorting function is different from that in data/course.tsx
+    // the format of quarters in planner is different so function was adjusted accordingly
+    // data/course.tsx has format "2020-2021 Winter" whereas planner has "Winter 2021"
+    sortPlannerTerms(terms: Array<string>) {
         let sortedArray: string[] = terms.sort((n1,n2) => {
-            if (n1.substring(0,9) > n2.substring(0,9)) {
+            if (n1.substring(n1.length-4) > n2.substring(n2.length-4)) {
+                return 1;
+            }
+            if (n1.substring(n1.length-4) < n2.substring(n2.length-4)) {
+                return -1;
+            }
+            // if years are equal, compare "Fall", "Winter", "Spring", or "Summer"
+            // order should be Winter, Spring, Summer, Fall
+
+            if (n1.substring(0, n1.length-5) === "Winter" && n2.substring(0, n2.length-5) === "Spring") {
+                return -1;
+            }
+            if (n2.substring(0, n2.length-5) === "Winter" && n1.substring(0, n1.length-5) === "Spring") {
                 return 1;
             }
 
-            if (n1.substring(0,9) < n2.substring(0,9)) {
+            if (n1.substring(0, n1.length-5) === "Winter" && n2.substring(0, n2.length-5) === "Summer") {
                 return -1;
             }
-            // if years are equal, compare "Autumn", "Winter", or "Spring"
-            // winter and spring are exceptions to alphabetical rule
-            // otherwise, alphabetical comparisons work
-            if (n1.substring(10) === "Winter" && n2.substring(10) === "Spring") {
-                return -1;
-            }
-            if (n2.substring(10) === "Winter" && n1.substring(10) === "Spring") {
+            if (n2.substring(0, n2.length-5) === "Winter" && n1.substring(0, n1.length-5) === "Summer") {
                 return 1;
             }
 
-            // actually, so are winter and summer
-            if (n1.substring(10) === "Winter" && n2.substring(10) === "Summer") {
+            if (n1.substring(0, n1.length-5) === "Winter" && n2.substring(0, n2.length-5) === "Fall") {
                 return -1;
             }
-            if (n2.substring(10) === "Winter" && n1.substring(10) === "Summer") {
+            if (n2.substring(0, n2.length-5) === "Winter" && n1.substring(0, n1.length-5) === "Fall") {
                 return 1;
             }
 
-            // alphabetical
-            if (n1.substring(10) < n2.substring(10)) {
+            if (n1.substring(0, n1.length-5) === "Spring" && n2.substring(0, n2.length-5) === "Summer") {
                 return -1;
             }
+            if (n2.substring(0, n2.length-5) === "Spring" && n1.substring(0, n1.length-5) === "Summer") {
+                return 1;
+            }
 
-            if (n1.substring(10) > n2.substring(10)) {
+            if (n1.substring(0, n1.length-5) === "Spring" && n2.substring(0, n2.length-5) === "Fall") {
+                return -1;
+            }
+            if (n2.substring(0, n2.length-5) === "Spring" && n1.substring(0, n1.length-5) === "Fall") {
+                return 1;
+            }
+
+            if (n1.substring(0, n1.length-5) === "Summer" && n2.substring(0, n2.length-5) === "Fall") {
+                return -1;
+            }
+            if (n2.substring(0, n2.length-5) === "Summer" && n1.substring(0, n1.length-5) === "Fall") {
                 return 1;
             }
 
@@ -108,7 +124,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 let quarters = doc.data()?.quarters;
         
                 if(quarters) {
-                    quarters = scope.sortTerms(quarters);
+                    quarters = scope.sortPlannerTerms(quarters);
     
                     scope.setState({quarters: quarters});
                 }
@@ -147,7 +163,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                         firstName: ""};
 
         this.addQuarter = this.addQuarter.bind(this);
-        this.sortTerms = this.sortTerms.bind(this);
+        this.sortPlannerTerms = this.sortPlannerTerms.bind(this);
         this.removeItem = this.removeItem.bind(this);
         this.deleteQuarter = this.deleteQuarter.bind(this);
         this.deleteCollection = this.deleteCollection.bind(this);
@@ -237,7 +253,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
         }
         quarters.push(quarter);
 
-        quarters = this.sortTerms(quarters);
+        quarters = this.sortPlannerTerms(quarters);
 
 
         this.setState({quarters: quarters});
