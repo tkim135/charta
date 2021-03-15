@@ -329,7 +329,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 <TableRow>
                                     <TableCell>Course</TableCell>
                                     <TableCell align="right">Units</TableCell>
-                                    <TableCell align="right">Ways</TableCell>
+                                    <TableCell align="right">WAYS</TableCell>
                                     <TableCell align="right">Action</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -457,7 +457,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             autoFocus
                             margin="dense"
                             id="ways"
-                            label="Ways Fulfilling (e.g., WAY-SI)"
+                            label="WAYS Fulfilling (e.g., WAY-SI)"
                             type="text"
                             // give current value as default value
                             value={this.state.newWays}

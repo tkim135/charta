@@ -290,34 +290,12 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
                             onChange={(evt) => this.setState({newUnits: parseInt(evt.target.value)})}
                             fullWidth
                     />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="grade"
-                        label="Grade"
-                        type="text"
-                        value={this.state.newGrade} // give current value as default value
-                        onChange={(evt) => this.setState({newGrade: evt.target.value})}
-                        fullWidth
-                    />
-
-
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="reason"
-                        label="Reason"
-                        type="text"
-                        value={this.state.newReason} // give current value as default value
-                        onChange={(evt) => this.setState({newReason: evt.target.value})}
-                        fullWidth
-                    />
 
                     <TextField
                         autoFocus
                         margin="dense"
                         id="ways"
-                        label="Ways Fulfilling (e.g., WAY-SI)"
+                        label="WAYS Fulfilling (e.g., WAY-SI)"
                         type="text"
                         value={this.state.newWays} // give current value as default value
                         onChange={(evt) => this.setState({newWays: evt.target.value})}
