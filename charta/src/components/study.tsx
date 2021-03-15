@@ -95,38 +95,41 @@ class StudyGroups extends Component<StudyProps, StudyState>{
 
     async handleChange() {
 
-    	this.setState({addedToGroup: !this.state.addedToGroup});
-    	const db = firebase.firestore();
-        let uid = firebase.auth().currentUser?.uid;
-        let courseId = window.location.pathname.split("/").pop() as any;
-        const docRef = db.collection('classes').doc(courseId);
-        const doc = await docRef.get();
-        var studyPartners = doc.data()?.StudyPartners;
-    	
-    	if(this.state.addedToGroup) { //add to list
-    		//if studypartners field already exists and user not yet added:
-        	if(studyPartners && studyPartners.indexOf(uid) === -1) {
-        		studyPartners.push(uid);
-        		await db.collection("classes").doc(courseId).update({StudyPartners: studyPartners});
-        		this.loadCourseData();
-        	}
-        	
-        	//If studyPartners field hasn't been created yet:
-        	if(!studyPartners) {
-        		studyPartners = [uid];
-        		await db.collection("classes").doc(courseId).update({StudyPartners: studyPartners});
-        		this.loadCourseData();
-        	}
+		firebase.auth().onAuthStateChanged(async (user) =>  {
+			this.setState({addedToGroup: !this.state.addedToGroup});
+			const db = firebase.firestore();
+			let uid = user?.uid;
+			let courseId = window.location.pathname.split("/").pop() as any;
+			const docRef = db.collection('classes').doc(courseId);
+			const doc = await docRef.get();
+			var studyPartners = doc.data()?.StudyPartners;
+			
+			if(this.state.addedToGroup) { //add to list
+				//if studypartners field already exists and user not yet added:
+				if(studyPartners && studyPartners.indexOf(uid) === -1) {
+					studyPartners.push(uid);
+					await db.collection("classes").doc(courseId).update({StudyPartners: studyPartners});
+					this.loadCourseData();
+				}
+				
+				//If studyPartners field hasn't been created yet:
+				if(!studyPartners) {
+					studyPartners = [uid];
+					await db.collection("classes").doc(courseId).update({StudyPartners: studyPartners});
+					this.loadCourseData();
+				}
+	
+			} else { //remove from list:
+				//if studypartners field already exists and user in array:
+				if(studyPartners && studyPartners.indexOf(uid) !== -1) {
+					let index = studyPartners.indexOf(uid);
+					studyPartners.splice(index, 1);
+					await db.collection("classes").doc(courseId).update({StudyPartners: studyPartners});
+					this.loadCourseData();
+				}
+			}
+		})
 
-    	} else { //remove from list:
-    		//if studypartners field already exists and user in array:
-    		if(studyPartners && studyPartners.indexOf(uid) !== -1) {
-    			let index = studyPartners.indexOf(uid);
-            	studyPartners.splice(index, 1);
-    			await db.collection("classes").doc(courseId).update({StudyPartners: studyPartners});
-    			this.loadCourseData();
-    		}
-    	}
     }
 
 

@@ -122,6 +122,8 @@ class Planner extends Component<PlannerProps, PlannerState> {
                 const doc = await userRef.get();
 
                 let quarters = doc.data()?.quarters;
+
+                scope.setState({firstName: doc.data()?.firstName})
         
                 if(quarters) {
                     quarters = scope.sortPlannerTerms(quarters);
