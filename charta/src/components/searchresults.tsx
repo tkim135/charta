@@ -236,7 +236,6 @@ class CourseCard extends Component<CourseCardProps, CourseCardState>{
             <CardActions>
                     <Button size="small" ><Link to={'/studygroups/' + course.id }>Find study groups</Link></Button>
                     <Button size="small" onClick={() => this.openDialog()}>Add to academic plan <AddCircleIcon/></Button>
-                    <Button size="small">Find similar classes</Button>
             </CardActions>
             {(this.state.availableQuartersToTake.length > 0) && <Dialog open={this.state.addingCourse}>
                 <DialogTitle>Add course to academic plan</DialogTitle>
