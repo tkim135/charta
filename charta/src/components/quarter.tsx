@@ -341,7 +341,8 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                         <TableCell align="right">{course.units}</TableCell>
                                         <TableCell
                                         align="right">{course.ways}</TableCell>
-                                        <TableCell align="right"> <Button className="delete-button" onClick={() => this.handleDeleteCourse(i)}><DeleteIcon/></Button></TableCell>
+                                        <TableCell align="right">                         <Tooltip title="Remove course from quarter">
+<Button className="delete-button" onClick={() => this.handleDeleteCourse(i)}><DeleteIcon/></Button></Tooltip></TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

@@ -296,7 +296,7 @@ class Planner extends Component<PlannerProps, PlannerState> {
                         <Typography component="h1" variant="h5" align="center">Planned Schedule</Typography>
                     </Grid>
                     <Grid item>
-                        <Tooltip title="Add a quarter to your academic plan">
+                        <Tooltip title="Add a quarter to your academic plan.">
                             <Button onClick={() => this.setState({open: true})} >Add quarter<AddCircleIcon/></Button>
                         </Tooltip>
 
