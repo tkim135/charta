@@ -25,6 +25,8 @@ import MuiAlert from '@material-ui/lab/Alert';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Tooltip from '@material-ui/core/Tooltip';
+
 
 interface QuarterState {
     addCourse: boolean;
@@ -308,9 +310,12 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                     aria-label="Expand"
                     aria-controls="additional-actions1-content"                
                    >
+                       <Tooltip title="Remove this quarter from your plan">
                         <Button onClick={this.deleteButtonPressed} onFocus={(event: any) => event.stopPropagation()}>
-                             <HighlightOffIcon/>
-                        </Button>
+                                <HighlightOffIcon/>
+                            </Button>
+                       </Tooltip>
+                      
 
                         <h1 id="quarter-title" style={{display: "inline"}}><strong>{this.props.name}</strong></h1>
                                                    
@@ -324,8 +329,6 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                 <TableRow>
                                     <TableCell>Course</TableCell>
                                     <TableCell align="right">Units</TableCell>
-                                    <TableCell align="right">Grade</TableCell>
-                                    <TableCell align="right">Reason</TableCell>
                                     <TableCell align="right">Ways</TableCell>
                                     <TableCell align="right">Action</TableCell>
                                 </TableRow>
@@ -337,19 +340,18 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                                     <TableRow key={i}>
                                         <TableCell component="th" scope="row">{course.code}</TableCell>
                                         <TableCell align="right">{course.units}</TableCell>
-                                        <TableCell align="right">{course.grade}</TableCell>
-                                        <TableCell align="right">{course.reason}</TableCell>
                                         <TableCell
                                         align="right">{course.ways}</TableCell>
-                                        <TableCell align="right"> <Button className="delete-button" onClick={() => this.handleDeleteCourse(i)}><DeleteIcon/></Button></TableCell>
+                                        <TableCell align="right">                         <Tooltip title="Remove course from quarter">
+<Button className="delete-button" onClick={() => this.handleDeleteCourse(i)}><DeleteIcon/></Button></Tooltip></TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                             <TableRow>
                                 <TableCell>Total</TableCell>
                                 <TableCell align="right">{this.state.totalUnits}</TableCell>
-                                <TableCell align="right"> </TableCell>
-                                <TableCell align="right"> </TableCell>
+                                {/* <TableCell align="right"> </TableCell>
+                                <TableCell align="right"> </TableCell> */}
                                 <TableCell align="right"> </TableCell>
                                 <TableCell align="right"> </TableCell>
                             </TableRow>
@@ -450,28 +452,6 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             fullWidth
                         />
 
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="grade"
-                            label="Grade"
-                            type="text"
-                            value={this.state.newGrade} // give current value as default value
-                            onChange={(evt) => this.setState({newGrade: evt.target.value})}
-                            fullWidth
-                        />
-
-
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="reason"
-                            label="Reason"
-                            type="text"
-                            value={this.state.newReason} // give current value as default value
-                            onChange={(evt) => this.setState({newReason: evt.target.value})}
-                            fullWidth
-                        />
 
                         <TextField
                             autoFocus
@@ -484,6 +464,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
                             onChange={(evt) => this.setState({newWays: evt.target.value})}
                             fullWidth
                         />
+
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.handleClose} color="primary" className="cancelButton">

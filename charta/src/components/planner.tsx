@@ -23,6 +23,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface PlannerState {
     loading: boolean;
@@ -295,7 +296,10 @@ class Planner extends Component<PlannerProps, PlannerState> {
                         <Typography component="h1" variant="h5" align="center">Planned Schedule</Typography>
                     </Grid>
                     <Grid item>
-                        <Button onClick={() => this.setState({open: true})} >Add quarter<AddCircleIcon/></Button>
+                        <Tooltip title="Add a quarter to your academic plan.">
+                            <Button onClick={() => this.setState({open: true})} >Add quarter<AddCircleIcon/></Button>
+                        </Tooltip>
+
                         </Grid>
                 </Grid>
 
