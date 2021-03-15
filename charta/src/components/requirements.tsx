@@ -6,8 +6,7 @@ import 'firebase/firestore';
 import '../firebase';
 import Button from '@material-ui/core/Button';
 import Course from "../data/course";
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import Tooltip from '@material-ui/core/Tooltip';
 import Container from '@material-ui/core/Container';
 
 
@@ -159,8 +158,8 @@ class Requirements extends Component<RequirementsProps, RequirementsState> {
 
         return(
             <Container style={{marginTop: "10px"}}>
-                <Card>
-                   <CardContent>
+                <Tooltip title="We'll check the requirements that you haven't fulfilled with your current set of courses.">
+                <div>
                 <Button style={{marginTop: "10px", marginBottom: "10px"}} onClick={() => this.loadCourseIds()}>
                     Check General Requirements Still Needed
                 </Button>
@@ -178,10 +177,9 @@ class Requirements extends Component<RequirementsProps, RequirementsState> {
 
                 </div>
             
-                
-                   </CardContent>
-                   </Card>
-                   </Container>
+                </div>
+                </Tooltip>
+            </Container>
         );
     }
 }
