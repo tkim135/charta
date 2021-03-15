@@ -75,7 +75,7 @@ h1{
 
 .info{
   color: grey;
-  font-size: 20px;
+  font-size: 19px;
   margin-bottom: 3vh;
 }
 
@@ -87,6 +87,10 @@ h1{
 .gradient {
     background: linear-gradient(to bottom, #6fcf97 0%, #ffffff 100%);
     min-height: 70vh;
+}
+
+.landingLogo {
+  margin-bottom: 3vh;
 }
 
 .table {
