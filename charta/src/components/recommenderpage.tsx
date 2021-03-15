@@ -4,7 +4,7 @@ import firebase from "firebase";
 import 'firebase/firestore';
 import '../firebase';
 import Course from "../data/course";
-import Header2 from "./header2";
+import Header from "./header";
 import Footer from "./footer";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -20,6 +20,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 
 
@@ -58,11 +60,6 @@ class CourseCard extends Component<CourseCardProps>{
                 <Chip label={course.gradingBasis}/>
             </CardContent>
 
-            <CardActions>
-                    <Button size="small">Find study groups</Button>
-                    <Button size="small">Add to academic plan <AddCircleIcon/></Button>
-                    <Button size="small">Find similar classes</Button>
-            </CardActions>
         </Card>
         );
     }
@@ -90,7 +87,10 @@ interface RecommenderPageState {
     checkedTerms: Array<boolean>,
 
     startOfResults: number, 
-    numResults: number
+    numResults: number,
+
+    invalidParams: boolean,
+    shouldRefresh: boolean
 }
 
 class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageState>{
@@ -99,7 +99,7 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
         
         let course =   new Course("", [], "", [], "", 0, 0, [], [], "");
 
-        let _checkedReqs = new Array(13)
+        let _checkedReqs = new Array(24)
         let _checkedTerms = new Array(4)
         let _checkedUnits = new Array(6)
 
@@ -122,7 +122,10 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
             checkedUnits: _checkedUnits.fill(false), 
 
             startOfResults: 0,
-            numResults: 5
+            numResults: 5,
+            
+            invalidParams: false,
+            shouldRefresh: true
         }; 
         this.renderCourseCard = this.renderCourseCard.bind(this)
     }
@@ -207,16 +210,18 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
     }
 
     async handleGenerateRecommendations() {
-        if (this.state.gers == [] && this.state.units == [] && this.state.terms == [] && this.state.keywords == '') {
-            console.log("no parameters!")
+        console.log(this.state.gers, this.state.units, this.state.terms, this.state.keywords)
+        if (this.state.gers.length === 0 && this.state.units.length === 0 && this.state.terms.length === 0 && this.state.keywords === '') {
             // add an alert
+            this.setState({invalidParams: true})
+            console.log("no parameters!")
         } else {
             let query: any = {}
             if (this.state.gers.length > 0) {
-                query["reqs"] = this.state.gers.join()
+                query["reqs"] = this.state.gers
             } 
             if (this.state.units.length > 0) { 
-                query["units"] = this.state.units.join()
+                query["units"] = this.state.units
             }
             if (this.state.keywords.length > 0) {
                 console.log("keywords: ", this.state.keywords)
@@ -226,39 +231,60 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
             if (this.state.terms.length > 0) {
                 query["terms"] = this.state.terms.join() 
             }
+            query["start"] = this.state.startOfResults
+            query["numResults"] = this.state.numResults
+
             var generateRecommendations = firebase.functions().httpsCallable('recommendation')
 
             this.setState({loading: true, recommendations: []})
+            // if (this.state.shouldRefresh === true) {
+            //     this.setState({recommendations: []})
+            // }
+      
             let res = await generateRecommendations(query)
             
             res.data.forEach((courseElements: any) => {
-                const course = new Course(
-                    courseElements['id'],
-                    courseElements["Codes"],
-                    courseElements["Description"],
-                    courseElements["GER"],
-                    courseElements["Grading Basis"],
-                    courseElements["Min Units"],
-                    courseElements["Max Units"],
-                    [],
-                    courseElements["Terms"],
-                    courseElements["Title"]
+                console.log(courseElements)
+                if (courseElements != null){
+                    const course = new Course(
+                        courseElements['id'],
+                        courseElements["Codes"],
+                        courseElements["Description"],
+                        courseElements["GER"],
+                        courseElements["Grading Basis"],
+                        courseElements["Min Units"],
+                        courseElements["Max Units"],
+                        [],
+                        courseElements["Terms"],
+                        courseElements["Title"]
 
-                );
-                
-                this.state.recommendations.push(course)
+                    );
+                    
+                    this.state.recommendations.push(course)
+                }
             });
             // var finalRecommendations = this.state.recommendations
             // finalRecommendations.shift()
-            this.setState({shouldShowRecs: true, loading: false, startOfResults: 0})
+            this.setState({shouldShowRecs: true, loading: false})
+            if (this.state.shouldRefresh === true){
+                this.setState({startOfResults: 0})
+            }
             console.log("keywords: ", this.state.keywords)
 
             console.log(this.state.recommendations)
         }
     }
 
-    handleShowMore() {
+    handleResendQuery() {
+
+    }
+
+    async handleShowMore() {
         this.setState({startOfResults: this.state.startOfResults + this.state.numResults})
+        if (this.state.startOfResults >= this.state.recommendations.length){
+           this.setState({shouldRefresh: false})
+           await this.handleGenerateRecommendations()
+        }
         console.log(this.state.startOfResults)
     }
     
@@ -273,7 +299,7 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
     render() {
         return (
             <div className="flex flex-col h-screen justify-between mainContent">
-                <Header2/>
+                <Header/>
                 <div className="contentDiv">
                     <div className="searchBarDiv">
                         <TextField
@@ -423,6 +449,33 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                                     /> 
                                     <FormControlLabel
                                         control={<Checkbox 
+                                            value="DB:Hum"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='13'
+                                            checked={this.state.checkedReqs[13]}
+                                        />}
+                                        label='DB:Hum'
+                                    /> 
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="DB:Mtath"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='14'
+                                            checked={this.state.checkedReqs[14]}
+                                        />}
+                                        label='DB:Math'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="DB:SocSci"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='15'
+                                            checked={this.state.checkedReqs[15]}
+                                        />}
+                                        label='DB:SocSci'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
                                             value="DB:EngrAppSci"
                                             onChange={(event) => this.handleGERCheckbox(event)}
                                             id='12'
@@ -430,6 +483,79 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                                         />}
                                         label='DB:EngrAppSci'
                                     /> 
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="DB:NatSci"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='16'
+                                            checked={this.state.checkedReqs[16]}
+                                        />}
+                                        label='DB:NatSci'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="EC:EthicReas"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='17'
+                                            checked={this.state.checkedReqs[17]}
+                                        />}
+                                        label='EC:EthicReas'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="EC:GlobalCom"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='18'
+                                            checked={this.state.checkedReqs[18]}
+                                        />}
+                                        label='EC:GlobalCom'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="EC:AmerCul"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='19'
+                                            checked={this.state.checkedReqs[19]}
+                                        />}
+                                        label='EC:AmerCul'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="EC:Gender"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='20'
+                                            checked={this.state.checkedReqs[20]}
+                                        />}
+                                        label='EC:Gender'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="IHUM1"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='21'
+                                            checked={this.state.checkedReqs[21]}
+                                        />}
+                                        label='IHUM1'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="IHUM2"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='22'
+                                            checked={this.state.checkedReqs[22]}
+                                        />}
+                                        label='IHUM2'
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox 
+                                            value="IHUM3"
+                                            onChange={(event) => this.handleGERCheckbox(event)}
+                                            id='23'
+                                            checked={this.state.checkedReqs[23]}
+                                        />}
+                                        label='IHUM3'
+                                    />
+
                                 </FormGroup>
                             </div> : null }
 
@@ -539,9 +665,18 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                                 </FormGroup>
                             </div> : null}
                         </div> 
+
                     </div>
+                    <div>
+                    <Snackbar onClose={() => this.setState({invalidParams: false})}
+                        open={this.state.invalidParams} autoHideDuration={2000}>
+                        <MuiAlert severity="warning">
+                            Please enter some keywords, GERS, terms or units.
+                        </MuiAlert>
+                    </Snackbar>
+                    </div>
+
                 </div>
-                {console.log(this.state.checkedReqs)}
                 <Footer/>
             </div>
         );
