@@ -43,16 +43,16 @@ class Landing extends Component<LandingProps, LandingState>{
 					<Grid item xs={3}>
 						<div className="gradient">
 						</div>
-						<img alt="Charta logo" src={"./images/croppedLogo.png"}/>
+						<img className="landingLogo" alt="Charta logo" src={"./images/croppedLogo.png"}/>
 					</Grid>
-					<Grid item xs={4}>
+					<Grid item xs={5}>
 							<p className="intro">Welcome to Charta</p>
 							<p className="info">We know classes can be tough, and figuring out the right ones can be even tougher! That's why at Charta, we're working to take some of the stress out of planning your schedule.</p>
 							<p className="info">Charta is the perfect tool for students to organize their course plans, check their degree progress, and receive recommendations about the best courses suited for them.</p>
 							<Button color="primary"><Link to="/signin">Chart your path!</Link></Button>
 					</Grid>
 					
-					<Grid item xs={5}>
+					<Grid item xs={4}>
 						<img src={"./images/climb.png"} alt="Student Image"/>
 					</Grid>
 				</Grid>
