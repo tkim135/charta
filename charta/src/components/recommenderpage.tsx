@@ -666,6 +666,7 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                             </div> : null}
                         </div> 
 
+
                     </div>
                     <div>
                     <Snackbar onClose={() => this.setState({invalidParams: false})}
@@ -675,7 +676,6 @@ class RecommenderPage extends Component<RecommenderPageProps, RecommenderPageSta
                         </MuiAlert>
                     </Snackbar>
                     </div>
-
                 </div>
                 <Footer/>
             </div>
