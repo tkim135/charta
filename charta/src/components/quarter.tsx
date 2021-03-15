@@ -27,6 +27,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Tooltip from '@material-ui/core/Tooltip';
 
+
 interface QuarterState {
     addCourse: boolean;
     onClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -63,7 +64,7 @@ class Quarter extends Component<QuarterProps, QuarterState> {
 
        // iterate over courses in this quarter
        db.collection(path).get().then( (querySnapshot) => {
-           console.log(path);
+           console.log('load courses', path);
 
             // get the course
             querySnapshot.forEach((doc) =>  {
