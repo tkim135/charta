@@ -128,6 +128,7 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
                             {...params}
                             variant="outlined"
                             label="Search for classes"
+                         
                             InputProps={{
                                 ...params.InputProps,
                                 startAdornment: (
