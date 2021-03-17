@@ -99,9 +99,9 @@ class SearchBar extends Component<SearchBarProps, SearchBarState>{
             <div>
                 <Autocomplete
                     id="search"
-                    style={{ width: 600 }}
+                    
                     open={this.state.open}
-
+                    style={{width: "500px"}}
                     onOpen={() => {
                         this.setOpen(true);
                     }}
