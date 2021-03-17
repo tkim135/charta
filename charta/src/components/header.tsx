@@ -65,8 +65,8 @@ class Header extends Component<HeaderProps, HeaderState>{
         <header className="header">
           <AppBar position="static">
             <Toolbar>
-                <Box display='flex' flexGrow={1}>
-                       <img alt="Charta logo" src={logo} width="50" />
+                <Box display='flex' flexGrow={1} className="header-box">
+                       <img alt="Charta logo" src={logo} width="50" height="50"/>
  
                     <Button><h1 id="title"><Link to="/home">Charta</Link> </h1></Button>
 

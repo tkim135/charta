@@ -107,3 +107,9 @@ h1{
   color: white;
   text-align: left;
 }
+
+
+.header-box{
+  align-items: flex-start
+}
+
